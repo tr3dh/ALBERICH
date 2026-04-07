@@ -62,7 +62,6 @@ enum class STDUniformType : int{
 
 };
 
-void defaultSetupLexicalInstances();
 bool CheckAllOperatorsRegistered();
 
 struct ProcessingResult;

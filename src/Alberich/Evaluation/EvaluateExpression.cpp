@@ -177,7 +177,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
         else{
 
             // default verhalten für Zuweisung als Wert und alle anderen Fälle
-            if(!scope.containsVariable(node.argument)){ constructVariable(node.argument, scope, types::VOID::typeIndex, false); }
+            if(!scope.containsVariable(node.argument)){ constructVariable(node.argument, scope, types::_VOID::typeIndex, false); }
             
             //
             prcResult.evalResults.emplace_back();
@@ -832,7 +832,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             }
             else if(node.children.size() == 2 && node.children[0].argument == "ref"){
                 
-                constructType = types::VOID::typeIndex;
+                constructType = types::_VOID::typeIndex;
                 constructReference = true;
             }
             else if(node.children.size() == 3 && typeForKeywordExists(node.children[0].argument) && node.children[1].argument == "ref"){
@@ -908,7 +908,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                 idx = arg.getVariableRef().getData()->getTypeIndex();
 
-                argIndices.emplace_back(idx == types::VOID::typeIndex ? IObject::ARBITATRY_TYPE : idx);
+                argIndices.emplace_back(idx == types::_VOID::typeIndex ? IObject::ARBITATRY_TYPE : idx);
             }
 
             // //
@@ -1137,7 +1137,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                 if(!returnToScope.containsVariable(node.children[2].argument) ||
                     returnToScope.getVariable(node.children[2].argument)->getData()->isUniform() == false){
 
-                    _ERROR << "Assertion failed : Uniform " << node.children[2].argument << " konnte nicht gefunden werden\n" << endl;
+                    _ERROR << "Assertion failed : Uniform " << node.children[2].argument << " konnte nicht gefunden werden\n" << endln;
                 }
             }
             else if(typeForKeywordExists(node.children[1].argument) && node.children[2].argument == "uniform" && node.children.size() > 3){
@@ -1146,7 +1146,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     returnToScope.getVariable(node.children[3].argument)->getData()->isUniform() == false ||
                     returnToScope.getVariable(node.children[3].argument)->getData()->getTypeIndex() != getTypeIndexByKeyword(node.children[1].argument)){
 
-                    _ERROR << "Assertion failed : Uniform " << node.children[3].argument << " konnte nicht gefunden werden\n" << endl;
+                    _ERROR << "Assertion failed : Uniform " << node.children[3].argument << " konnte nicht gefunden werden\n" << endln;
                 }
             }
             else if( node.children[2].argument == "uniform"){
@@ -1197,8 +1197,8 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
         }
         else{
             
-            _ERROR << "Invalid Chain Template" << endl;
-            LOG << node << endl;
+            _ERROR << "Invalid Chain Template" << endln;
+            LOG << node << endln;
         }
 
         break;

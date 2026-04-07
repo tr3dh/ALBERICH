@@ -2,17 +2,17 @@
 
 namespace types{
 
-    std::unique_ptr<IObject> VOID::nullRef = nullptr;
-    const std::string VOID::nullRefKeyword;
+    std::unique_ptr<IObject> _VOID::nullRef = nullptr;
+    const std::string _VOID::nullRefKeyword;
     
-    bool VOID::setUpClass(){
+    bool _VOID::setUpClass(){
 
         // register in TypeRegister
-        if(!init("void", [](){ return new VOID(); })){ return false; }
+        if(!init("void", [](){ return new _VOID(); })){ return false; }
 
         // Keyword
-        VOID::nullRef = std::make_unique<VOID>();
-        VOID::nullRef.reset(new VOID);
+        _VOID::nullRef = std::make_unique<_VOID>();
+        _VOID::nullRef.reset(new _VOID);
 
         return true;
     }

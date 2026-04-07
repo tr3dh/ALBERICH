@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, const ASTNode& obj) {
     }
     os << "]";
 
-    os << endl;
+    os << endln;
 
     //
     for(const auto& child : obj.children){
@@ -141,7 +141,7 @@ void convertTokensToAST(ASTNode& Expr, const std::vector<Token>& tokens, const s
 
         //
         // LOG << "Hierarch " << minHierarchie << " Prim Ops " <<
-        //     ((primOperator < g_numLexerOperators) ? g_lengthSortedLexerOperators[primOperator] : "None") << endl;
+        //     ((primOperator < g_numLexerOperators) ? g_lengthSortedLexerOperators[primOperator] : "None") << endln;
 
         auto isMatchingBrace = [&](size_t begin, size_t end) {
 
@@ -189,7 +189,7 @@ void convertTokensToAST(ASTNode& Expr, const std::vector<Token>& tokens, const s
             return true;
         };
 
-        // LOG << Expr.begin << " " << Expr.end << endl;
+        // LOG << Expr.begin << " " << Expr.end << endln;
 
         //
         if(primOperator < g_numLexerOperators){

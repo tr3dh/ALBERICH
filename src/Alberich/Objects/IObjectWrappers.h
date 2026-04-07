@@ -35,7 +35,7 @@ public:
 
         if(typeIndex == INVALID_TYPE_INDEX){
             
-            _ERROR << "Type Registrierung von Type '" <<  keyword << "' fehlgeschlagen" << endl;
+            _ERROR << "Type Registrierung von Type '" <<  keyword << "' fehlgeschlagen" << endln;
             return false;
         }
 

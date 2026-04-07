@@ -35,12 +35,12 @@ bool setUpBackendRegister(){
             PREPARE_RETURNS;
 
             //
-            LOG << "Backendregister with " << g_backendRegister.size() << " emplaced backends :" << endl;
+            LOG << "Backendregister with " << g_backendRegister.size() << " emplaced backends :" << endln;
 
             //
             for(const auto& [backendlabel, _] : g_backendRegister){
 
-                LOG << ">> " << backendlabel << endl;
+                LOG << ">> " << backendlabel << endln;
             }
     },
     {});

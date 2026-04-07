@@ -36,7 +36,7 @@ struct KeywordRegister{
 
     friend std::ostream& operator<<(std::ostream& os, const KeywordRegister& reg){
 
-        LOG << "Register mit " << reg.keywordObjects.size() << " registrierten Keywords" << endl;
+        LOG << "Register mit " << reg.keywordObjects.size() << " registrierten Keywords" << endln;
 
         for(const auto& [kw, obj] : reg.keywordObjects){
             

@@ -114,11 +114,11 @@ struct TypeRegister{
 
     friend std::ostream& operator<<(std::ostream& os, const TypeRegister& reg){
 
-        LOG << "Register mit " << reg.typeInfos.size() << " registrierten Typen" << endl;
+        LOG << "Register mit " << reg.typeInfos.size() << " registrierten Typen" << endln;
 
         for(const auto& [k, f] : reg.typeInfos){
             
-            os << "type " << k << "; keyword '" << f.keyword << "'" << endl;
+            os << "type " << k << "; keyword '" << f.keyword << "'" << endln;
         }
         return os;
     }

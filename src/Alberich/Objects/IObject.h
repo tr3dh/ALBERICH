@@ -4,7 +4,10 @@
 // Interfache :                 IObject
 // Polymorphe Nutzung über :    IObject*, unique_ptr<IObject>
 
-#include "defines.h"
+#include "Alberich/preDecls.h"
+
+namespace fs = std::filesystem;
+typedef fs::file_time_type fileTime;
 
 // Typeindex über den registrierte Interface Erben von IObject identifiziert werden können
 typedef uint16_t TypeIndex;

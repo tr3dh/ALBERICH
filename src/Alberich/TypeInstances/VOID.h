@@ -2,15 +2,15 @@
 
 #include "InstanceIncludes.h"
 
-#ifdef VOID
-#undef VOID
+#ifdef _VOID
+#undef _VOID
 #endif
 
 bool IsReferenceValid(std::unique_ptr<IObject>* ptr);
 
 namespace types{
 
-    class VOID : public IIndexedObject<VOID>{
+    class _VOID : public IIndexedObject<_VOID>{
 
     public:
 
@@ -19,15 +19,15 @@ namespace types{
         static std::unique_ptr<IObject> nullRef;
         const static std::string nullRefKeyword;
 
-        VOID() = default;
+        _VOID() = default;
 
         std::unique_ptr<IObject> clone() override{
-            return std::make_unique<VOID>();
+            return std::make_unique<_VOID>();
         };
 
         // virtual ist redundant, die print bleibt überscheibbar
         void print() const override{
-            LOG << "VOID_MEMBER";
+            LOG << "_VOID_MEMBER";
         }
     };
 };

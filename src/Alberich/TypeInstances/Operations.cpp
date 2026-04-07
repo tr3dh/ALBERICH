@@ -1,4 +1,5 @@
 #include "Operations.h"
+#include "windows.h"
 
 //
 std::vector<std::string> g_UsedOperators = {};
@@ -56,7 +57,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue, "Variable der Wert zuwewiesen wird ist Rvalue",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                 "narrowing conversion");
 
             //
@@ -103,7 +104,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue && (!sourceIsRValue || source.getVariableRef().isReference()), "Bei Referenzierung sind rvalues mit im Spiel ",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                     "narrowing conversion");
 
             RETURNING_ASSERT(recipient.getVariableRef().isReference(), "Recipient bei Referenzierung ist keine Referenz",);
@@ -137,7 +138,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue, "Bei Mov sind rvalues mit im Spiel ",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                     "narrowing conversion");
 
             if(source.getVariableRef().isReference()){
@@ -169,7 +170,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue, "Bei Mov sind rvalues mit im Spiel ",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                     "narrowing conversion");
 
             if(source.getVariableRef().isReference()){
@@ -205,7 +206,7 @@ bool emplaceStdOperations(){
             //
             // RETURNING_ASSERT(!recipientIsRValue, "Bei Mov sind rvalues mit im Spiel ",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                     "narrowing conversion");
 
             if(source.getVariableRef().isReference()){
@@ -215,7 +216,7 @@ bool emplaceStdOperations(){
 
             recipient.getVariableRef().move(source.getVariableRef());
     },
-    {types::VOID::typeIndex});
+    {types::_VOID::typeIndex});
 
     registerFunction("__swap__", {IObject::ARBITATRY_TYPE, IObject::ARBITATRY_TYPE},
         [__functionLabel__ = "__swap__", __numArgs__ = 2](FREG_ARGS){
@@ -236,7 +237,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue && !sourceIsRValue, "Bei " + std::string(__functionLabel__) + " sind rvalues mit im Spiel ",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                     "narrowing conversion");
 
             recipient.getVariableRef().swap(source.getVariableRef());
@@ -261,7 +262,7 @@ bool emplaceStdOperations(){
             //
             RETURNING_ASSERT(!recipientIsRValue, "Variable der Wert zuwewiesen wird ist Rvalue",);
 
-            ASSERT(recipient.getTypeIndex() == types::VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
+            ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                 "narrowing conversion");
 
             //
@@ -424,7 +425,7 @@ bool emplaceStdOperations(){
             // Returns
             for(size_t paramIdx = 0; paramIdx < inputs.size(); paramIdx++){
                 
-                LOG << *inputs[paramIdx] << endl;
+                LOG << *inputs[paramIdx] << endln;
             }
     },
     {});
@@ -439,7 +440,7 @@ bool emplaceStdOperations(){
             // PREPARE_RETURNS;
 
             // Returns
-            LOG << returnToScope << endl;
+            LOG << returnToScope << endln;
     },
     {});
 
@@ -453,7 +454,7 @@ bool emplaceStdOperations(){
             // PREPARE_RETURNS;
 
             // Returns
-            LOG << *returnToScope.getRootScope() << endl;
+            LOG << *returnToScope.getRootScope() << endln;
     },
     {});
 
@@ -468,7 +469,7 @@ bool emplaceStdOperations(){
 
             // Returns
             for(const auto& [label, idx] : g_TypeRegister.typeIndices){
-                LOG << "reg[" << label << "] = " << idx << endl;
+                LOG << "reg[" << label << "] = " << idx << endln;
             }
     },
     {});
@@ -483,7 +484,7 @@ bool emplaceStdOperations(){
             // PREPARE_RETURNS;
 
             // Returns
-            LOG << "functionRegister mit " << g_FunctionRegister.functions.size() << " Einträgen" << endl;
+            LOG << "functionRegister mit " << g_FunctionRegister.functions.size() << " Einträgen" << endln;
 
             for(const auto& [key, val] : g_FunctionRegister.functions){
 
@@ -492,7 +493,7 @@ bool emplaceStdOperations(){
                     LOG << idx << ", ";
                 }
 
-                LOG << "]" << endl;
+                LOG << "]" << endln;
             }
     },
     {});
@@ -510,7 +511,7 @@ bool emplaceStdOperations(){
 
             for(const auto& [idx, reg] : g_MemberFunctionRegisters){
                 
-                LOG << "Register für tpIdx " << idx << endl;
+                LOG << "Register für tpIdx " << idx << endln;
 
                 for(const auto& [key, val] : reg.functions){
 
@@ -519,7 +520,7 @@ bool emplaceStdOperations(){
                         LOG << idx << ", ";
                     }
 
-                    LOG << "]" << endl;
+                    LOG << "]" << endln;
                 }
             }
     },
@@ -538,7 +539,7 @@ bool emplaceStdOperations(){
 
             for(const auto& [idx, reg] : g_StaticFunctionRegisters){
                 
-                LOG << "Register für tpIdx " << idx << endl;
+                LOG << "Register für tpIdx " << idx << endln;
 
                 for(const auto& [key, val] : reg.functions){
 
@@ -547,7 +548,7 @@ bool emplaceStdOperations(){
                         LOG << idx << ", ";
                     }
 
-                    LOG << "]" << endl;
+                    LOG << "]" << endln;
                 }
             }
     },
@@ -565,14 +566,14 @@ bool emplaceStdOperations(){
             // Returns
 
             //
-            LOG << "NullRefs gefunden : " << g_nullRefs.size() << endl;
+            LOG << "NullRefs gefunden : " << g_nullRefs.size() << endln;
 
             for(const auto& [idx, ref] : g_nullRefs){
                 
-                LOG << "nullRefs [" << idx << "] : " << ref << endl;
+                LOG << "nullRefs [" << idx << "] : " << ref << endln;
             }
 
-            LOG << endl;
+            LOG << endln;
     },
     {});
 
@@ -622,7 +623,7 @@ bool emplaceStdOperations(){
 
             returns.back().variable.clone(inputs[0]->getVariableRef());
     },
-    {types::VOID::typeIndex});
+    {types::_VOID::typeIndex});
 
     //
     registerFunction("copy", {IObject::ARGS_TYPE},
@@ -657,7 +658,7 @@ bool emplaceStdOperations(){
             returns.back().variable.inValidate();
             returns.back().variable.reference(inputs[0]->getVariableRef());
     },
-    {types::VOID::typeIndex});
+    {types::_VOID::typeIndex});
 
     //
     registerFunction("reference", {IObject::ARGS_TYPE},
@@ -689,7 +690,7 @@ bool emplaceStdOperations(){
             ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
             PREPARE_RETURNS;
 
-            LOG << g_TypeRegister << endl;
+            LOG << g_TypeRegister << endln;
     },
     {});
 

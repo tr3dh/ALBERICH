@@ -143,7 +143,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const FunctionRegister& reg){
 
-        LOG << "Register mit " << reg.functions.size() << " registrierten Funktionen" << endl;
+        LOG << "Register mit " << reg.functions.size() << " registrierten Funktionen" << endln;
 
         for(const auto& [k, f] : reg.functions){
             
@@ -153,7 +153,7 @@ public:
                 os << p << ", ";
             }
 
-            os << "};" << endl;
+            os << "};" << endln;
         }
         return os;
     }

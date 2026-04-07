@@ -21,8 +21,8 @@ Scope::~Scope(){
     
             if(refExists){
 
-                _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endl;
-                _ERROR << "entsprechende Referenz wird dereferenziert" << endl;
+                _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endln;
+                _ERROR << "entsprechende Referenz wird dereferenziert" << endln;
 
                 refPtr->forceReference(&g_nullRefs[refPtr->getData()->getTypeIndex()]);
             }
@@ -44,8 +44,8 @@ Scope::~Scope(){
 
                     refPtr->reference(&g_nullRefs[refPtr->getData()->getTypeIndex()]);
 
-                    _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endl;
-                    _ERROR << "entsprechende Referenz wird dereferenziert" << endl;
+                    _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endln;
+                    _ERROR << "entsprechende Referenz wird dereferenziert" << endln;
                 }
             }
         }
@@ -141,7 +141,7 @@ std::pair<bool, Variable*> Scope::containsDataReference(IObject* dataPtr){
         auto pair = var.getData()->containsDataReference(dataPtr);
         if(pair.first){
 
-            LOG << lb << " is containing "; dataPtr->print(); LOG << " at " << *pair.second << endl;
+            LOG << lb << " is containing "; dataPtr->print(); LOG << " at " << *pair.second << endln;
             return pair;
         }
     }

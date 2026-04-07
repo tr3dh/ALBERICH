@@ -30,7 +30,7 @@ struct Scope {
 
         if(getVariable(variableName) != nullptr){
 
-            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endl;
+            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endln;
         }
 
         variableTable.try_emplace(variableName);
@@ -42,7 +42,7 @@ struct Scope {
 
         if(variableTable.contains(variableName)){
 
-            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endl;
+            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endln;
         }
 
         variableTable.try_emplace(variableName);
@@ -53,7 +53,7 @@ struct Scope {
 
         if(variableTable.contains(variableName)){
 
-            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endl;
+            _ERROR << "Variable " << variableName << " ist bereits im Scope vorhanden" << endln;
         }
 
         variableTable.try_emplace(variableName);
@@ -66,7 +66,7 @@ struct Scope {
 
         if(variablePtr == nullptr){
 
-            _ERROR << "Variable " << variableName << " wurde in vorhandener Scope Hierarchie nicht gefunden" << endl;
+            _ERROR << "Variable " << variableName << " wurde in vorhandener Scope Hierarchie nicht gefunden" << endln;
             return;
         }
 

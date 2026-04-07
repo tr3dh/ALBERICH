@@ -129,43 +129,6 @@ std::string getErrorContext(){
 std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPath, Scope* parent){
 
     //
-    if(fs::exists(fs::path(scriptPath).parent_path().string() + "/__LPECONFIG.JSON")){
-
-        //
-        // LOG << "[" + getTimestamp() + "] LPEConfig gefunden, Umgebung wird aufgesetzt" << endl;
-
-        //
-        nlohmann::json lpeConfig = nlohmann::json::parse(std::ifstream(fs::path(scriptPath).parent_path() / "__LPECONFIG.JSON"), nullptr, true, true);
-
-        //
-        g_UsedOperators = lpeConfig.at("LEXICON").get<std::vector<std::string>>();
-        g_OneArgOperations = lpeConfig.at("PREFIX").get<std::map<std::string, std::string>>();
-        g_TwoArgOperations = lpeConfig.at("INFIX").get<std::map<std::string, std::string>>();
-        g_ArgChainOperations = lpeConfig.at("FOLD").get<std::map<std::string, std::string>>();
-    }
-    else{
-
-        //
-        // LOG << "[" + getTimestamp() + "] keine LPEConfig gefunden, Umgebung wird mit default Config aufgesetzt" << endl;
-        
-        //
-        defaultSetupLexicalInstances();
-
-        //
-        // LOG << "[" + getTimestamp() + "] Default LPEConfig wird exportiert ..." << endl;
-
-        //
-        nlohmann::ordered_json lpeConfig;
-        lpeConfig["LEXICON"]  = g_UsedOperators;
-        lpeConfig["PREFIX"]   = g_OneArgOperations;
-        lpeConfig["INFIX"]    = g_TwoArgOperations;
-        lpeConfig["FOLD"]     = g_ArgChainOperations;
-
-        //
-        std::ofstream(fs::path(scriptPath).parent_path() / "__LPECONFIG.JSON") << lpeConfig.dump(4);
-    }
-
-    //
     CheckAllOperatorsRegistered();
 
     //
@@ -173,10 +136,6 @@ std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPa
 
     // Abhier wird als Context in den Asserts der entsprechende Code Ausschnitt aufgeführt
     g_getErrorContext = &getErrorContext;
-
-    // Aufsetzen der mitgelieferten Standard Typen
-    // weitere eigene Typen können bspl. in der eigenen main aufgerufen werden
-    setUpTypes();
 
     //
     SetUpLexer(g_UsedOperators);            
@@ -188,16 +147,9 @@ std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPa
     //
     Scope* rootScope = nullScope.getRootScope();
 
-    //
-    std::string ExecMode = "DEBUG";
-    nullScope.constructAndReturnVariable("ExecMode")->constructByObject(new types::STRING(&ExecMode));
-
-    //
-    nullScope.constructAndReturnVariable("g_unwrapOperands")->constructByObject(new types::BOOL(&unwrapOperands));
-    // noch mehr davon freischalten (abbruch nach erster Assertion, suppress assertions, etc)
-
-    //
-    // nullScope.constructAndReturnVariable("g_compareTemplateDependencies")->constructByObject(new types::BOOL(&g_compareTemplateDependencies));
+    // //
+    // std::string ExecMode = "DEBUG";
+    // nullScope.constructAndReturnVariable("ExecMode")->constructByObject(new types::STRING(&ExecMode));
 
     // Scope befüllen
     nullScope.constructVariable("__ScriptCalledAs__", types::INT::typeIndex);
@@ -388,143 +340,4 @@ bool CheckAllOperatorsRegistered()
     check(g_ArgChainOperations, "g_ArgChainOperations");
 
     return allFound;
-}
-
-void defaultSetupLexicalInstances(){
-    
-    g_UsedOperators = {
-    
-        COLON,
-
-        // Zuwisungen und Memory Management
-        "=", "<<", "<>", "<-", "<+",                            // Memory Management Semantik
-        "+=", "-=", "*=", "/=", "^=",                           // Ops für 2 Arg Operationen
-        ".=", ".n=", "..=", ":=", "\\x=", "\\(x)=", "\\(.)=",  // für Matrix Ops
-        "\\diff=",
-        "&=", "!&=", "|=", "!|=", "x|=", "!x|=",        // Ops für boolsche/logische 2 Arg Operationen
-
-        // Walrus Operator
-        "=>",
-
-        // Inline Operatoren
-        "&&", "!&", "||", "!|", "x|", "!x|",            // ...
-        "==", "!=", ">=", "<=", ">", "<", "%",          // Ops für 2 Arg Vergleichs Operationen
-        "+", "-", "*", "/", "^",                        // Ops für Verkettung mult Arg Operations per 2 Arg Operationen
-        ".", ".n", "..", ":", "\\x", "\\(x)", "°=",     // für verkettung über Matrix ops
-        "\\diff",
-        "++", "--", "!",                                // Single Argument Ops
-        KOMMA,                                          //
-        "~", "'", "°", "$",                             // Ops für Index Notation
-        "^~", "^'", "^°",                               // Ops für Index Notation
-        "->", ">>",                                     // Zugriff auf Statics Scope / Attrib Scopes
-        "dref", "invl", "delete",
-    };
-
-    //
-    g_OneArgOperations = {
-
-        {"!", "__negate__"},
-        {"-", "__negate__"},
-        {"++", "__increment__"},
-        {"--", "__decrement__"},
-        {"<-", "__move__"},
-        {"<<", "__reference__"},
-        {"<+", "__copy__"},
-        {"~", "__inverseAssign__"},
-        {"'", "__transposeAssign__"},
-        {"°", "__traceAssign__"},
-        {"^~", "__inverseInplaceAssign__"},
-        {"^'", "__transposeInplaceAssign__"},
-        {"^°", "__traceInplaceAssign__"},
-        {"$", "__sectionAssign__"},
-        {"dref", "__dereference__"},
-        {"invl", "__invalidate__"},
-        {"delete", "__delete__"},
-    };
-
-    // Map der Form Operator | Funktionslabel
-    g_TwoArgOperations = {
-
-        // Inhalte später mit Operatoren liste aus einer json Datei laden, die das Project Env darstellt
-        
-        {"=", "__assign__"},
-        {"<<", "__reference__"},
-        {"<>", "__swap__"},
-        {"<-", "__move__"},
-        {"<+", "__copy__"},
-
-        {"+=", "__addAssign__"},
-        {"-=", "__subAssign__"},
-        {"*=", "__mulAssign__"},
-        {"/=", "__divAssign__"},
-        {"^=", "__expAssign__"},
-
-        {"=>", "__walrusAssign__"},
-
-        {"==", "__equal__"},
-        {"!=", "__notEqual__"},
-        {">",  "__bigger__"},
-        {"<",  "__smaller__"},
-        {">=", "__biggerEqual__"},
-        {"<=",  "__smallerEqual__"},
-
-        {"&=", "__andAssign__"},
-        {"|=", "__orAssign__"},
-        {"x|=", "__xorAssign__"},
-        {"!&=", "__nandAssign__"},
-        {"!|=", "__norAssign__"},
-        {"!x|=", "__nxorAssign__"},
-
-        {"%", "__modulo__"},
-        {".=", "__dotProductAssign__"},
-        {".n=", "__contractingDotProductAssign__"},
-        {"..=", "__mirroringDoubleContractionAssign__"},
-        {":=", "__crossingDoubleContractionAssign__"},
-        {"\\x=", "__crossProductAssign__"},
-        {"\\(x)=", "__dyadProductAssign__"},
-        {"°=", "__traceAssign__"},
-        {"\\diff=", "__diffAssign__"},
-    };
-
-    // Map der Form Operator | (Funktionslabel, verknüpfende Operation)
-    // zb. '+' | (sum),
-    // dabei startet sum eine forschleife, diese erstellt ein temp result mit einem deepcopy des ersten wertes
-    // und verknüpft alle weiteren member über addUp
-    // addUp ist dann für zwei argumente deklariert und bearbeitet das erste direkt
-    // andere Option :
-    // direkt verkettende Funktion hinterlegen
-    // und schleife, die diese Aufruft in default Logik einbetten
-    g_ArgChainOperations = {
-
-        {"+", "__addAssign__"},
-        {"-", "__subAssign__"},
-        {"*", "__mulAssign__"},
-        {"/", "__divAssign__"},
-        {"^", "__expAssign__"},
-        
-        // Bools
-        {"&&", "__andAssign__"},
-        {"||", "__orAssign__"},
-        {"x|", "__xorAssign__"},
-        {"!&", "__nandAssign__"},
-        {"!|", "__norAssign__"},
-        {"!x|", "__nxorAssign__"},
-        
-        // // Bools
-        // {"and", "__andAssign__"},
-        // {"or", "__orAssign__"},
-        // {"xor", "__xorAssign__"},
-        // {"nand", "__nandAssign__"},
-        // {"nor", "__norAssign__"},
-        // {"nxor", "__nxorAssign__"},
-
-        {".", "__dotProductAssign__"},
-        {".n", "__contractingDotProductAssign__"},
-        {"..", "__mirroringDoubleContractionAssign__"},
-        {":", "__crossingDoubleContractionAssign__"},
-        {"\\x", "__crossProductAssign__"},
-        {"\\(x)", "__dyadProductAssign__"},
-        {"°", "__traceAssign__"},
-        {"\\diff", "__diffAssign__"},
-    };
 }
