@@ -1,0 +1,3 @@
+[submodule "src/Alberich/ByteSequence"]
+	path = src/Alberich/ByteSequence
+	url = https://github.com/tr3dh/ByteSequence.git
