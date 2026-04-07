@@ -268,12 +268,11 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
     RETURNING_ASSERT(nullScope != nullptr, "nullScope pointer ist nullptr", {});
 
     //
+    RETURNING_ASSERT(fs::exists(scriptPath), "Script " + scriptPath + " existiert nicht", {});
+
+    //
     std::ifstream file(scriptPath);
-    if (!file) {
-        
-        _ERROR << "kein Script " << scriptPath << " gefunden" << ENDL;
-        return {};
-    }
+    RETURNING_ASSERT(file, "Script " + scriptPath + " kann nicht geöffnet werden", {});
 
     bool cachePrevScript = false;
     Script* g_previouslyEvaluatedScript = nullptr;
