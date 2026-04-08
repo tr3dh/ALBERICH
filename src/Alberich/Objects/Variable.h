@@ -43,11 +43,13 @@ struct Variable{
 
         if((lhs != nullptr && lhs->isUniform()) || (rhs != nullptr && rhs->isUniform())){
 
-            lhs->moveMember(rhs);
+            // lhs->moveMember(rhs);
+            lhs->swapMembers(rhs);
         }
         else{
 
-            lhs = std::move(rhs);
+            // lhs = std::move(rhs);
+            std::swap(lhs, rhs);
         }
     }
 
