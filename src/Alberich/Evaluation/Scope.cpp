@@ -1,8 +1,18 @@
 #include "Scope.h"
 
 //
+void (*g_processScopeBeforeDeletion)(Scope*) = nullptr;
+
+//
 Scope::~Scope(){
     
+    // Benutzerdefinierte Behandlung
+    if(g_processScopeBeforeDeletion != nullptr){
+        (*g_processScopeBeforeDeletion)(this);
+    }
+
+    // Wenn Scope eigenständig ist (keinen parent hat) können seine Variablen auch nicht von 
+    // extern referenziert sein
     if(parent == nullptr){
         return;   
     }

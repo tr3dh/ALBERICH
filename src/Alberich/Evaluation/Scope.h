@@ -6,6 +6,7 @@
 typedef std::map<std::string, Variable> VariableTable;
 
 extern std::map<TypeIndex, Scope> g_staticScopes;
+extern void (*g_processScopeBeforeDeletion)(Scope*);
 
 struct Scope {
 
