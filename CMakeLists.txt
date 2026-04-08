@@ -14,6 +14,7 @@ set(CPPOBJS "")
 set(LINKLIBS "")
 
 provideLib("${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/magic_enum" "https://github.com/Neargye/magic_enum.git" "${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/magic_enum/include" "" "" "" "" "" "" "")
+provideLib("${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/lsp-framework" "https://github.com/leon-bckl/lsp-framework.git" "${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/lsp-framework" "" "lsp" "" "" "" "" "")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/Alberich/ByteSequence")
 
 add_library(alberich ${SOURCES})
@@ -22,3 +23,4 @@ target_link_libraries(alberich PRIVATE ByteSequence)
 apply_aggressive_optimizations(alberich)
 
 target_include_directories(alberich PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/Alberich ${INCLUDES})
+target_link_libraries(alberich PUBLIC ${LINKLIBS}/src)
