@@ -119,6 +119,6 @@ TypeIndex getTypeIndexByKeyword(const std::string& keyword){
 
 const std::string& getKeywordByTypeIndex(TypeIndex typeIndex){
 
-    RETURNING_ASSERT(g_TypeRegister.typeInfos.contains(typeIndex), "Unter Index ist kein Type registriert", "");
+    RETURNING_ASSERT(g_TypeRegister.typeInfos.contains(typeIndex), "Unter Index " + std::to_string(typeIndex) + " ist kein Type registriert", "");
     return g_TypeRegister.typeInfos[typeIndex].keyword;
 }
