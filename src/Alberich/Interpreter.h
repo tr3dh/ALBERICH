@@ -64,6 +64,9 @@ enum class STDUniformType : int{
 
 bool CheckAllOperatorsRegistered();
 
+extern void (*g_handleScriptBeforeExecution)(const std::string&);
+extern void (*g_handleScriptAfterExecution)(const std::string&);
+
 struct ProcessingResult;
 ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, ExecuteScriptAs execAs);
 

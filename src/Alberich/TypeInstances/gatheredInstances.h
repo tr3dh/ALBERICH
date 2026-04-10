@@ -10,6 +10,7 @@
 #include "INT.h"
 #include "DOUBLE.h"
 #include "STRING.h"
+#include "STRUCT.h"
 
 #include "Operations.h"
 

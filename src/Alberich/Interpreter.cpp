@@ -141,52 +141,48 @@ std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPa
     SetUpLexer(g_UsedOperators);            
 
     //
-    Scope nullScope = {};
-    nullScope.parent = parent;
-
-    //
-    Scope* rootScope = nullScope.getRootScope();
+    Scope* rootScope = (parent != nullptr) ? parent : new Scope();
 
     // //
     // std::string ExecMode = "DEBUG";
-    // nullScope.constructAndReturnVariable("ExecMode")->constructByObject(new types::STRING(&ExecMode));
+    // rootScope->constructAndReturnVariable("ExecMode")->constructByObject(new types::STRING(&ExecMode));
 
     // Scope befüllen
-    nullScope.constructVariable("__ScriptCalledAs__", types::INT::typeIndex);
+    rootScope->constructVariable("__ScriptCalledAs__", types::INT::typeIndex);
 
     //
-    nullScope.constructVariable("__MainProc__", types::INT::typeIndex);
-    nullScope.setVariable("__MainProc__", new types::INT(0));
+    rootScope->constructVariable("__MainProc__", types::INT::typeIndex);
+    rootScope->setVariable("__MainProc__", new types::INT(0));
 
     //
-    nullScope.constructVariable("__CoProc__", types::INT::typeIndex);
-    nullScope.setVariable("__CoProc__", new types::INT(1));
+    rootScope->constructVariable("__CoProc__", types::INT::typeIndex);
+    rootScope->setVariable("__CoProc__", new types::INT(1));
 
     //
-    nullScope.constructVariable("__Include__", types::INT::typeIndex);
-    nullScope.setVariable("__Include__", new types::INT(2));
+    rootScope->constructVariable("__Include__", types::INT::typeIndex);
+    rootScope->setVariable("__Include__", new types::INT(2));
 
     // Hier wird Skript als auszuführendes MainProc aufgerufen
-    nullScope.setVariable("__ScriptCalledAs__", new types::INT(0));
+    rootScope->setVariable("__ScriptCalledAs__", new types::INT(0));
 
     //
-    nullScope.constructVariable("__script__", types::STRING::typeIndex);
-    nullScope.setVariable("__script__", new types::STRING(std::filesystem::absolute(scriptPath).string()));
+    rootScope->constructVariable("__script__", types::STRING::typeIndex);
+    rootScope->setVariable("__script__", new types::STRING(std::filesystem::absolute(scriptPath).string()));
 
     //
-    nullScope.constructVariable("__proc__", types::STRING::typeIndex);
-    nullScope.setVariable("__proc__", new types::STRING(std::filesystem::absolute(scriptPath).string()));
+    rootScope->constructVariable("__proc__", types::STRING::typeIndex);
+    rootScope->setVariable("__proc__", new types::STRING(std::filesystem::absolute(scriptPath).string()));
 
     //
-    nullScope.constructVariable("__args__", types::STRING::typeIndex);
-    nullScope.setVariable("__args__", new types::STRING("--execute"));
+    rootScope->constructVariable("__args__", types::STRING::typeIndex);
+    rootScope->setVariable("__args__", new types::STRING("--execute"));
 
     //
-    nullScope.constructVariable("__CWD__", types::STRING::typeIndex);
-    nullScope.setVariable("__CWD__", new types::STRING(fs::path(scriptPath).parent_path().string()));
+    rootScope->constructVariable("__CWD__", types::STRING::typeIndex);
+    rootScope->setVariable("__CWD__", new types::STRING(fs::path(scriptPath).parent_path().string()));
 
     //
-    ProcessingResult scriptReturn = executeScript(scriptPath, &nullScope, ExecuteScriptAs::MainProc);
+    ProcessingResult scriptReturn = executeScript(scriptPath, rootScope, ExecuteScriptAs::MainProc);
 
     // isolieren der Objekte aus dem EvalResult Vektor
     std::vector<std::unique_ptr<IObject>> isolatedObjects;
@@ -208,13 +204,22 @@ std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPa
     //
     g_getErrorContext = nullptr;
 
+    //
+    if(parent == nullptr){ delete rootScope; }
+
     return isolatedObjects;
 
     // nullScope wird geläscht ...
     // --- ab hier sind alle ptrs auf die nullScope ungültig 
 }
 
+void (*g_handleScriptBeforeExecution)(const std::string&) = nullptr;
+void (*g_handleScriptAfterExecution)(const std::string&) = nullptr;
+
 ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, ExecuteScriptAs execAs){
+
+    //
+    if(g_handleScriptBeforeExecution != nullptr){ (*g_handleScriptBeforeExecution)(scriptPath); }
 
     //
     RETURNING_ASSERT(nullScope != nullptr, "nullScope pointer ist nullptr", {});
@@ -314,6 +319,9 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
 
         g_currentlyEvaluatedScript = g_previouslyEvaluatedScript;
     }
+
+    //
+    if(g_handleScriptAfterExecution != nullptr){ (*g_handleScriptAfterExecution)(scriptPath); }
 
     //
     return prc;
