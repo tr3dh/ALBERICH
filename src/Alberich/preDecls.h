@@ -199,3 +199,8 @@ void emplaceVectorsIntoMap(std::map<K, V>& map, const std::vector<K>& keys, cons
         map.try_emplace(keys[i], vals[i]);
     }
 }
+
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& os, const std::pair<A, B>& p) {
+    return os << "(" << p.first << ", " << p.second << ")";
+}

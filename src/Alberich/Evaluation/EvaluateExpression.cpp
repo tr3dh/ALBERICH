@@ -112,6 +112,9 @@ std::pair<bool, Variable*> ActiveScopesContainingDataVariableOrReference(IObject
     return std::make_pair(false, nullptr);
 }
 
+// Handhaben von Definitionen, params [Skriptpfad, label defiObjekt, Definitionszeile, (line, col) defiToken, (len) defiToken]
+void (*g_handleDefinition)(const std::string&, const std::string&, const std::string&, const std::pair<size_t, size_t>&, size_t) = nullptr;
+
 //
 ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& returnToScope, Context context){
 
@@ -177,7 +180,20 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
         else{
 
             // default verhalten für Zuweisung als Wert und alle anderen Fälle
-            if(!scope.containsVariable(node.argument)){ constructVariable(node.argument, scope, types::_VOID::typeIndex, false); }
+            if(!scope.containsVariable(node.argument)){
+
+                // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                // defiLabel >> node.argument
+                // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, node, node)
+                // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, node)
+                // defiTokenLen >> getToken(g_currentlyEvaluatedScript, node).length
+                if(g_handleDefinition != nullptr){
+                    (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, node.argument, getScriptSpan(g_currentlyEvaluatedScript, node, node), \
+                            getASTNodePosition(g_currentlyEvaluatedScript, node), getToken(g_currentlyEvaluatedScript, node).length);
+                }
+
+                constructVariable(node.argument, scope, types::_VOID::typeIndex, false);
+            }
             
             //
             prcResult.evalResults.emplace_back();
@@ -849,11 +865,31 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
             if(constructVariables.Relation == TkType::Argument){
 
+                // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                // defiLabel >> constructVariables.argument
+                // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, constructVariables, constructVariables)
+                // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, constructVariables)
+                // defiTokenLen >> getToken(g_currentlyEvaluatedScript, constructVariables).length
+                if(g_handleDefinition != nullptr){
+                    (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, constructVariables.argument, getScriptSpan(g_currentlyEvaluatedScript, constructVariables, constructVariables), \
+                            getASTNodePosition(g_currentlyEvaluatedScript, constructVariables), getToken(g_currentlyEvaluatedScript, constructVariables).length);
+                }
+
                 prcResult.evalResults.emplace_back();
                 prcResult.evalResults[0].setLValue(
                     constructVariable(constructVariables.argument, scope, constructType, constructReference));
             }
             if(constructVariables.Relation == TkType::Listing && constructVariables.children[0].Relation == TkType::Argument){
+
+                // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                // defiLabel >> constructVariables.argument
+                // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, constructVariables, constructVariables)
+                // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, constructVariables)
+                // defiTokenLen >> getToken(g_currentlyEvaluatedScript, constructVariables).length
+                if(g_handleDefinition != nullptr){
+                    (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, constructVariables.argument, getScriptSpan(g_currentlyEvaluatedScript, constructVariables, constructVariables), \
+                            getASTNodePosition(g_currentlyEvaluatedScript, constructVariables), getToken(g_currentlyEvaluatedScript, constructVariables).length);
+                }
 
                 prcResult.evalResults.emplace_back();
                 prcResult.evalResults[0].setLValue(
@@ -877,6 +913,16 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                     RETURNING_ASSERT(varNode.Relation == TkType::Argument, "",{});
 
+                    // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                    // defiLabel >> varNode.argument
+                    // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode)
+                    // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, varNode)
+                    // defiTokenLen >> getToken(g_currentlyEvaluatedScript, varNode).length
+                    if(g_handleDefinition != nullptr){
+                        (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, varNode.argument, getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode), \
+                                getASTNodePosition(g_currentlyEvaluatedScript, varNode), getToken(g_currentlyEvaluatedScript, varNode).length);
+                    }
+
                     prcResult.evalResults[childIdx].setLValue(
                         constructVariable(varNode.argument, scope, constructType, constructReference));
                 }
@@ -890,6 +936,16 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             //
             const ASTNode& params = node.children[2];
             const ASTNode& section = node.children[3];
+
+            // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+            // defiLabel >> node.children[1].argument
+            // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, node.children[0], node.children[2])
+            // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, node.children[1])
+            // defiTokenLen >> getToken(g_currentlyEvaluatedScript, node.children[1]).length
+            if(g_handleDefinition != nullptr){
+                (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, node.children[1].argument, getScriptSpan(g_currentlyEvaluatedScript, node.children[0], node.children[2]), \
+                        getASTNodePosition(g_currentlyEvaluatedScript, node.children[1]), getToken(g_currentlyEvaluatedScript, node.children[1]).length);
+            }
 
             //
             std::vector<TypeIndex> argIndices = {};
@@ -1121,6 +1177,16 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
             //
             const std::string& structName = node.children[1].argument;
+
+            // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+            // defiLabel >> node.children[1].argument
+            // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, node.children[0], node.children[1])
+            // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, node.children[1])
+            // defiTokenLen >> getToken(g_currentlyEvaluatedScript, node.children[1]).length
+            if(g_handleDefinition != nullptr){
+                (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, node.children[1].argument, getScriptSpan(g_currentlyEvaluatedScript, node.children[0], node.children[1]), \
+                        getASTNodePosition(g_currentlyEvaluatedScript, node.children[1]), getToken(g_currentlyEvaluatedScript, node.children[1]).length);
+            }
 
             Scope& attribScope = STRUCT::emplaceScopes(DeclaringStructByIndex, scope);
 

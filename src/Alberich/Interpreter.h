@@ -67,6 +67,15 @@ bool CheckAllOperatorsRegistered();
 extern void (*g_handleScriptBeforeExecution)(const std::string&);
 extern void (*g_handleScriptAfterExecution)(const std::string&);
 
+std::string getScriptSpan(Script* script, const ASTNode& left, const ASTNode& right);
+
+// line, col
+const Token& getToken(Script* script, const ASTNode& node);
+std::pair<size_t, size_t> getASTNodePosition(Script* script, const ASTNode& node);
+std::pair<size_t, size_t> getTokenPosition(Script* script, const Token& tk);
+
+std::string getScriptLine(Script* script, int line);
+
 struct ProcessingResult;
 ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, ExecuteScriptAs execAs);
 

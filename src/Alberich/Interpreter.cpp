@@ -21,6 +21,59 @@ int countOccurrences(const std::string& str, const std::string& sub) {
     return count;
 }
 
+std::string getScriptSpan(Script* script, const ASTNode& left, const ASTNode& right){
+
+    auto startPos = script->tokens[left.begin].position;
+    auto endPos = script->tokens[right.end].position + g_currentlyEvaluatedScript->tokens[right.end].length;
+
+    return script->scriptContent.substr(startPos, endPos - startPos);
+}
+
+const Token& getToken(Script* script, const ASTNode& node){
+    
+    return script->tokens[node.begin];
+}
+
+// line, col
+std::pair<size_t, size_t> getASTNodePosition(Script* script, const ASTNode& node){
+
+    const Token& tk = getToken(script, node); 
+    return getTokenPosition(script, tk);
+}
+
+// line, col
+std::pair<size_t, size_t> getTokenPosition(Script* script, const Token& tk){
+
+    size_t labelPos = tk.position;
+    size_t line = 0, col = 0;
+
+    //
+    for(const auto& startPos : script->lineBreaks){
+
+        if(startPos > labelPos){ break; }
+
+        line++;
+        col = labelPos - startPos + 1;
+    }
+
+    return std::make_pair(line, col);
+}
+
+std::string getScriptLine(Script* script, int line) {
+
+    line -= 1;
+    if(line < -1 || line >= script->lineBreaks.size()) return "";
+
+    size_t start = line < 0 ? 0 : script->lineBreaks[line];
+    size_t end   = (line + 1 < script->lineBreaks.size()) ? script->lineBreaks[line + 1] : script->scriptContent.size();
+
+    std::string lineStr = script->scriptContent.substr(start, end - start);
+    while(!lineStr.empty() && (lineStr.back() == ';' || lineStr.back() == ' ' || lineStr.back() == '\n'))
+        lineStr.pop_back();
+
+    return lineStr;
+}
+
 std::string getErrorContext(){
 
     std::string res;

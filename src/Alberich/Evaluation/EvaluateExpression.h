@@ -93,5 +93,10 @@ EvalResultPtrVec convertEvalResultsToPtrVec(EvalResultVec& resVec);
 //
 Variable* constructVariable(const std::string& variableName, Scope& scope, TypeIndex typeIndex, bool constructAsReference);
 
+// Handlers
+
+// Handhaben von Definitionen, params [Skriptpfad, label defiObjekt, Definitionszeile, (line, col) defiToken, (len) defiToken]
+extern void (*g_handleDefinition)(const std::string&, const std::string&, const std::string&, const std::pair<size_t, size_t>&, size_t);
+
 //
 ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& returnToScope, Context context);
