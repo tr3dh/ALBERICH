@@ -911,22 +911,84 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                     const ASTNode& varNode = constructVariables.children[0].children[childIdx];
 
-                    RETURNING_ASSERT(varNode.Relation == TkType::Argument, "",{});
+                    if(varNode.Relation == TkType::Argument){
 
-                    // scriptPath >> g_currentlyEvaluatedScript->scriptPath
-                    // defiLabel >> varNode.argument
-                    // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode)
-                    // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, varNode)
-                    // defiTokenLen >> getToken(g_currentlyEvaluatedScript, varNode).length
-                    if(g_handleDefinition != nullptr){
-                        (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, varNode.argument, getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode), \
-                                getASTNodePosition(g_currentlyEvaluatedScript, varNode), getToken(g_currentlyEvaluatedScript, varNode).length);
+                        // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                        // defiLabel >> varNode.argument
+                        // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode)
+                        // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, varNode)
+                        // defiTokenLen >> getToken(g_currentlyEvaluatedScript, varNode).length
+                        if(g_handleDefinition != nullptr){
+                            (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, varNode.argument, getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode), \
+                                    getASTNodePosition(g_currentlyEvaluatedScript, varNode), getToken(g_currentlyEvaluatedScript, varNode).length);
+                        }
+
+                        prcResult.evalResults[childIdx].setLValue(
+                            constructVariable(varNode.argument, scope, constructType, constructReference));
                     }
+                    else if(varNode.Relation == TkType::Chain && varNode.children.size() == 2){
 
-                    prcResult.evalResults[childIdx].setLValue(
-                        constructVariable(varNode.argument, scope, constructType, constructReference));
+                        // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+                        // defiLabel >> varNode.children[0].argument
+                        // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode)
+                        // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, varNode.children[0])
+                        // defiTokenLen >> getToken(g_currentlyEvaluatedScript, varNode.children[0]).length
+                        if(g_handleDefinition != nullptr){
+                            (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, varNode.children[0].argument, getScriptSpan(g_currentlyEvaluatedScript, varNode, varNode), \
+                                    getASTNodePosition(g_currentlyEvaluatedScript, varNode.children[0]), getToken(g_currentlyEvaluatedScript, varNode.children[0]).length);
+                        }
+
+                        // varname : varNode.children[0].argument
+                        // params : varNode.children[1]
+                        
+                        //
+                        ProcessingResult params = evaluateExpression(varNode.children[1], scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
+
+                        //
+                        Variable* var = scope.constructAndReturnVariable(varNode.children[0].argument);
+
+                        //
+                        ProcessingResult tmpPrc;
+                        callFunction(getKeywordByTypeIndex(constructType), tmpPrc.evalResults, convertEvalResultsToPtrVec(params.evalResults), scope);
+
+                        // var->constructByUniquePtr(std::move(*(tmpPrc.evalResults[0].getVariableRef().getUniqueData())));
+                        var->move(tmpPrc.evalResults[0].getVariableRef());
+
+                        prcResult.evalResults[childIdx].setLValue(scope.getVariable(varNode.children[0].argument));
+                    }
                 }
             }
+        }
+        else if(IsSingleConstructorCall(node)){
+
+            // scriptPath >> g_currentlyEvaluatedScript->scriptPath
+            // defiLabel >> node.children[1].argument
+            // defiLine >> getScriptSpan(g_currentlyEvaluatedScript, node, node)
+            // defiTokenPos >> getASTNodePosition(g_currentlyEvaluatedScript, node.children[1])
+            // defiTokenLen >> getToken(g_currentlyEvaluatedScript, node.children[1]).length
+            if(g_handleDefinition != nullptr){
+                (*g_handleDefinition)(g_currentlyEvaluatedScript->scriptPath, node.children[1].argument, getScriptSpan(g_currentlyEvaluatedScript, node, node), \
+                        getASTNodePosition(g_currentlyEvaluatedScript, node.children[1]), getToken(g_currentlyEvaluatedScript, node.children[1]).length);
+            }
+
+            const std::string& typeKeyword = node.children[0].argument;
+            const std::string& label = node.children[1].argument;
+
+            //
+            ProcessingResult params = evaluateExpression(node.children[2], scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
+
+            //
+            Variable* var = scope.constructAndReturnVariable(label);
+
+            //
+            ProcessingResult tmpPrc;
+            callFunction(typeKeyword, tmpPrc.evalResults, convertEvalResultsToPtrVec(params.evalResults), scope);
+
+            // var->constructByUniquePtr(std::move(*(tmpPrc.evalResults[0].getVariableRef().getUniqueData())));
+            var->move(tmpPrc.evalResults[0].getVariableRef());
+
+            prcResult.evalResults.emplace_back();
+            prcResult.evalResults[0].setLValue(scope.getVariable(label));
         }
         else if(node.children.size() == 4 && node.children[0].argument == "decl"){
 

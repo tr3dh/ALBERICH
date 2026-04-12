@@ -118,6 +118,47 @@ bool IsConstructionCall(const ASTNode& node){
     return false;
 }
 
+bool IsSingleConstructorCall(const ASTNode& node){
+
+    // Zwei Varianten :
+    // >> int a(...)
+    //    int [a(...)]
+
+    if(node.children.size() != 3 && node.children.size() != 2){ return false; }
+    if(!typeForKeywordExists(node.children[0].argument)){ return false; }
+
+    if(node.children.size() == 3 && node.children[1].Relation == TkType::Argument && node.children[2].Relation == TkType::Params){
+        
+        return true;
+    }
+
+    if(node.children.size() == 2){
+
+    }
+
+    return false;
+}
+
+bool IsMultiConstructorCall(const ASTNode& node){
+
+    // Zwei Varianten :
+    //    int a(...)
+    // >> int [a(...)]
+
+    if(node.children.size() != 3 && node.children.size() != 2){ return false; }
+    if(!typeForKeywordExists(node.children[0].argument)){ return false; }
+
+    if(node.children[1].Relation != TkType::Listing){ return false; }
+    if(node.children[1].children.size() < 1){ return false; }
+
+    if(node.children[1].children[0].Relation != TkType::Chain){ return false; }
+    if(node.children[1].children[0].children.size() != 2){ return false; }
+    if(node.children[1].children[0].children[0].Relation != TkType::Argument){ return false; }
+    if(node.children[1].children[0].children[1].Relation != TkType::Params){ return false; }
+
+    return true;
+}
+
 //
 bool IsFunctionCall(const ASTNode& node){
 
