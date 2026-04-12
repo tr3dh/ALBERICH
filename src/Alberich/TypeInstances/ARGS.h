@@ -53,8 +53,15 @@ namespace types{
                 //
                 RETURNING_ASSERT(res.isValid(), "Invalide Variable in ARGS die kopiert werden sollen",);
 
-                if(res.getVariableRef().isReference()){ getMember().emplace_back(); getMember().back().reference(res); }
-                else{ getMember().emplace_back(); getMember().back().cloneIntoRValue(res.getVariableRef()); }
+                if(res.getVariableRef().isReference()){
+
+                    getMember().emplace_back(); getMember().back().reference(res);
+                }
+                else{
+
+                    getMember().emplace_back(); getMember().back().cloneIntoRValue(res.getVariableRef());
+                    // getMember().emplace_back(); getMember().back().constructRValueByObject(res.getData()->clone().release());
+                }
             }
         }
 
@@ -99,10 +106,10 @@ namespace types{
         }
 
         //
-        void emplace(const FunctionParams& params, bool forceCopy = false){
+        void emplace(const FunctionParams& params){
 
             //
-            // member->reserve(member->size() + params.size());
+            member->reserve(params.size());
 
             for(const auto& param : params){
 
@@ -117,12 +124,73 @@ namespace types{
                     res.cloneIntoRValue(param->getVariableRef());
 
                     //
-                    member->emplace_back(std::move(res));
+                    emplace({&res});
                 }
                 else if(param->isLValue()){
 
                     //
                     member->emplace_back().setLValue(&param->getVariableRef());
+                }
+                else if(param->getVariableRef().isReference()){
+
+                    //
+                    member->emplace_back().reference(*param);
+                }
+                else{
+
+                    //
+                    member->emplace_back().moveIntoRValue(param->getVariableRef());
+                }
+            }
+
+            eliminateLValues();
+        }
+
+        //
+        void unpackingEmplace(const FunctionParams& params){
+
+            // ist unter Umständen nicht genug wegen ArgsParams
+            member->reserve(params.size());
+
+            for(const auto& param : params){
+
+                // Nicht nötig, da wenn der Parameter eine Args Variable ist eh geclont werden muss
+
+                // //
+                // if(this == param->getData()){
+
+                //     // Wenn zuerst der emplace passiert ist das object mit einer invaliden Varable
+                //     // gefüllt wenn es geclont wird. Deshalb muss eine tempräre Kopie gemacht werden
+
+                //     //
+                //     EvalResult res;
+                //     res.cloneIntoRValue(param->getVariableRef());
+
+                //     //
+                //     unpackingEmplace({&res});
+                // }
+                // else
+                if(param->getTypeIndex() == IObject::ARGS_TYPE){
+
+                    //
+                    EvalResult res;
+                    res.cloneIntoRValue(param->getVariableRef());
+
+                    //
+                    for(auto& subParam : static_cast<ARGS*>(res.getData())->getMember()){
+
+                        unpackingEmplace({&subParam});
+                    }
+                }
+                else if(param->isLValue()){
+
+                    //
+                    member->emplace_back().setLValue(&param->getVariableRef());
+                }
+                else if(param->getVariableRef().isReference()){
+
+                    //
+                    member->emplace_back().reference(*param);
                 }
                 else{
 

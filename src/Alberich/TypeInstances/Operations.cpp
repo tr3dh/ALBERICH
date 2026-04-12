@@ -426,6 +426,7 @@ bool emplaceStdOperations(){
             for(size_t paramIdx = 0; paramIdx < inputs.size(); paramIdx++){
                 
                 LOG << *inputs[paramIdx] << endln;
+                // inputs[paramIdx]->getVariableRef().getData()->print();
             }
     },
     {});

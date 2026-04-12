@@ -1087,14 +1087,15 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             EvalResult& inputN = *inputs[paramIdx];
                             EvalResult& paramVarN = paramRes.evalResults[paramIdx];
 
-                            //
-                            if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
+                            // //
+                            // if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
 
-                                static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
-                                    FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
-                                break;
-                            }
-                            else if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
+                            //     static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
+                            //         FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
+                            //     break;
+                            // }
+                            // else
+                            if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
 
                                 // Reference
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
@@ -1153,14 +1154,15 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             EvalResult& inputN = *inputs[paramIdx];
                             EvalResult& paramVarN = paramRes.evalResults[paramIdx];
 
-                            //
-                            if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
+                            // //
+                            // if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
 
-                                static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
-                                    FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
-                                break;
-                            }
-                            else if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
+                            //     static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
+                            //         FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
+                            //     break;
+                            // }
+                            // else
+                            if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
 
                                 // Reference
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
@@ -1220,14 +1222,15 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             EvalResult& inputN = *inputs[paramIdx];
                             EvalResult& paramVarN = paramRes.evalResults[paramIdx];
 
-                            //
-                            if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
+                            // //
+                            // if(paramVarN.getTypeIndex() == types::ARGS::typeIndex && paramIdx == paramRes.evalResults.size() - 1){
 
-                                static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
-                                    FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
-                                break;
-                            }
-                            else if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
+                            //     static_cast<types::ARGS*>(paramVarN.getVariableRef().getData())->moveFrom(
+                            //         FunctionParams(std::next(inputs.begin(), paramIdx), inputs.end()));
+                            //     break;
+                            // }
+                            // else
+                            if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
 
                                 // Reference
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());

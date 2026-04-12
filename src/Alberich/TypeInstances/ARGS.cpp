@@ -89,8 +89,11 @@ namespace types{
                 //
                 RETURNING_ASSERT(arg0->getMember() < mb->getMember().size(), "...",);
 
-                // schreiben in returns
-                returns.emplace_back().reference(mb->getMember()[arg0->getMember()]);
+                // gibt einen LValue zurück
+                returns.emplace_back().setLValue(&(mb->getMember()[arg0->getMember()].getVariableRef()));
+                
+                // // gibt eine Referenz zurück
+                // returns.emplace_back().reference(mb->getMember()[arg0->getMember()]);
         },
         {IObject::ARBITATRY_TYPE});
 
@@ -355,6 +358,19 @@ namespace types{
                 // Returns | Inputs
                 GET_MEMBER(ARGS);
                 mb->emplace(inputs);
+        },
+        {});
+
+        // Member
+        registerMemberFunction(ARGS::typeIndex, "unpackingEmplace", {IObject::ARGS_TYPE},
+            [__functionLabel__ = "unpackingEmplace"](FREG_ARGS){
+
+                // Asserts
+                ASSERT_IS_MEMBER_FUNCTION;
+
+                // Returns | Inputs
+                GET_MEMBER(ARGS);
+                mb->unpackingEmplace(inputs);
         },
         {});
 
