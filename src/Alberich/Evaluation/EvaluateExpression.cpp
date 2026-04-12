@@ -1046,6 +1046,12 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                         returns = evaluateExpression(section, functionScope, returnToScope, Context::NONE).evalResults;
 
+                        if(g_processScopeBeforeDeletion != nullptr){
+
+                            g_processScopeBeforeDeletion(&functionScope);
+                            functionScope.wasAlreadeyHandled = true;
+                        }
+
                         g_currentlyEvaluatedScript = prevScript;
                 },
                 {IObject::ARGS_TYPE});
@@ -1105,6 +1111,12 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                         }
 
                         returns = evaluateExpression(section, functionScope, returnToScope, Context::NONE).evalResults;
+
+                        if(g_processScopeBeforeDeletion != nullptr){
+
+                            g_processScopeBeforeDeletion(&functionScope);
+                            functionScope.wasAlreadeyHandled = true;
+                        }
 
                         g_currentlyEvaluatedScript = prevScript;
                 },
@@ -1167,6 +1179,12 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                         returns = evaluateExpression(section, functionScope, returnToScope, Context::NONE).evalResults;
 
+                        if(g_processScopeBeforeDeletion != nullptr){
+
+                            g_processScopeBeforeDeletion(&functionScope);
+                            functionScope.wasAlreadeyHandled = true;
+                        }
+
                         g_currentlyEvaluatedScript = prevScript;
                 },
                 {IObject::ARGS_TYPE});
@@ -1195,6 +1213,19 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
             //
             STRUCT::registerStruct(structName, DeclaringStructByIndex);
+
+            //
+            if(g_processScopeBeforeDeletion != nullptr){
+
+                g_processScopeBeforeDeletion(&attribScope);
+                attribScope.wasAlreadeyHandled = true;
+
+                if(g_staticScopes.contains(DeclaringStructByIndex)){
+
+                    g_processScopeBeforeDeletion(&g_staticScopes[DeclaringStructByIndex]);
+                    g_staticScopes[DeclaringStructByIndex].wasAlreadeyHandled = true;
+                }
+            }
         }
         else if(node.children.size() > 2 && node.children[0].argument == "requires"){
             

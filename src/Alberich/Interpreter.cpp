@@ -272,9 +272,6 @@ void (*g_handleScriptAfterExecution)(const std::string&) = nullptr;
 ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, ExecuteScriptAs execAs){
 
     //
-    if(g_handleScriptBeforeExecution != nullptr){ (*g_handleScriptBeforeExecution)(scriptPath); }
-
-    //
     RETURNING_ASSERT(nullScope != nullptr, "nullScope pointer ist nullptr", {});
 
     //
@@ -304,6 +301,9 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
     }
 
     g_currentlyEvaluatedScript = &src;
+
+    //
+    if(g_handleScriptBeforeExecution != nullptr){ (*g_handleScriptBeforeExecution)(scriptPath); }
     
     std::string line;
     while (std::getline(file, line)) {
@@ -368,13 +368,13 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
     //
     ProcessingResult prc = evaluateExpression(src.Expr, *nullScope, *nullScope, Context::NONE);
 
+    //
+    if(g_handleScriptAfterExecution != nullptr){ (*g_handleScriptAfterExecution)(scriptPath); }
+
     if(cachePrevScript){
 
         g_currentlyEvaluatedScript = g_previouslyEvaluatedScript;
     }
-
-    //
-    if(g_handleScriptAfterExecution != nullptr){ (*g_handleScriptAfterExecution)(scriptPath); }
 
     //
     return prc;

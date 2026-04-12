@@ -7,7 +7,7 @@ void (*g_processScopeBeforeDeletion)(Scope*) = nullptr;
 Scope::~Scope(){
     
     // Benutzerdefinierte Behandlung
-    if(g_processScopeBeforeDeletion != nullptr){
+    if(!wasAlreadeyHandled && g_processScopeBeforeDeletion != nullptr){
         (*g_processScopeBeforeDeletion)(this);
     }
 

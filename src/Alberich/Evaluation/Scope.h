@@ -14,6 +14,7 @@ struct Scope {
     VariableTable variableTable = {};
 
     //
+    bool wasAlreadeyHandled = false;
     Scope* parent = nullptr;
 
     //
