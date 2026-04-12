@@ -308,7 +308,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             const ASTNode& params = listingArg.children[1];
 
                             //
-                            ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, context);
+                            ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
 
                             //
                             ProcessingResult res;
@@ -331,7 +331,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     const ASTNode& params = child.children[1];
 
                     //
-                    ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, context);
+                    ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
 
                     //
                     ProcessingResult res;
@@ -348,7 +348,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     const ASTNode& params = child.children[0].children[1];
 
                     //
-                    ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, context);
+                    ProcessingResult paramRes = evaluateExpression(params, scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
 
                     //
                     ProcessingResult res;
@@ -395,7 +395,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     else{
 
                         const ASTNode& params = listingArg.children[1];
-                        ProcessingResult paramRes = evaluateExpression(params, scope, scope, context);
+                        ProcessingResult paramRes = evaluateExpression(params, scope, scope, Context::ASSIGN_RIGHTSIDE);
 
                         ProcessingResult tmpRes;
                         callStaticFunction(getTypeIndexByKeyword(node.children[0].argument), listingArg.children[0].argument,
@@ -426,7 +426,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             else if(node.children[1].Relation == TkType::Listing){
             
                 const ASTNode& params = node.children[1].children[0].children[1];
-                ProcessingResult paramRes = evaluateExpression(params, scope, scope, context);
+                ProcessingResult paramRes = evaluateExpression(params, scope, scope, Context::ASSIGN_RIGHTSIDE);
 
                 callStaticFunction(getTypeIndexByKeyword(node.children[0].argument), node.children[1].children[0].children[0].argument,
                     prcResult.evalResults, convertEvalResultsToPtrVec(paramRes.evalResults), scope);
@@ -434,7 +434,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             else{
 
                 const ASTNode& params = node.children[1].children[1];
-                ProcessingResult paramRes = evaluateExpression(params, scope, scope, context);
+                ProcessingResult paramRes = evaluateExpression(params, scope, scope, Context::ASSIGN_RIGHTSIDE);
 
                 callStaticFunction(getTypeIndexByKeyword(node.children[0].argument), node.children[1].children[0].argument,
                     prcResult.evalResults, convertEvalResultsToPtrVec(paramRes.evalResults), scope);
