@@ -374,6 +374,25 @@ namespace types{
         },
         {});
 
+        // Member
+        registerMemberFunction(ARGS::typeIndex, "reversed", {},
+            [__functionLabel__ = "unpackingEmplace"](FREG_ARGS){
+
+                // Asserts
+                ASSERT_IS_MEMBER_FUNCTION;
+                PREPARE_RETURNS;
+
+                // Returns | Inputs
+                GET_MEMBER(ARGS);
+
+                //
+                returns[0].constructRValueByObject(mb->clone().release());
+
+                GET_RETURN(ARGS, 0);
+                std::reverse(ret0->getMember().begin(), ret0->getMember().end());
+        },
+        {ARGS::typeIndex});
+
         return true;
     }
 }
