@@ -897,9 +897,12 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             }
             else if(constructVariables.Relation == TkType::Listing){
 
-                RETURNING_ASSERT(constructVariables.children.size() == 1 &&
-                    constructVariables.children[0].Relation == TkType::Operator &&
-                    constructVariables.children[0].Operator == g_kommaOperatorIndex, "", {});
+                // LOG << constructVariables << endln;
+
+                // RETURNING_ASSERT((constructVariables.children.size() == 1 &&             // Sicherstellen, dass Node Komma operator ist
+                //     constructVariables.children[0].Relation == TkType::Operator &&
+                //     constructVariables.children[0].Operator == g_kommaOperatorIndex)
+                //     , "", {});
 
                 // eigenliche Childnodes des Listing befinden sich in listing.children[0].children da das Listing im
                 // Gegensatz zu dem Params nicht automatisch den nach dem Komma Operator gesplittete Inhalt enthält sondern
@@ -1301,7 +1304,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                 if(!returnToScope.containsVariable(node.children[2].argument) ||
                     returnToScope.getVariable(node.children[2].argument)->getData()->isUniform() == false){
 
-                    _ERROR << "Assertion failed : Uniform " << node.children[2].argument << " konnte nicht gefunden werden\n" << endln;
+                    RETURNING_ASSERT(TRIGGER_ASSERT, "Uniform " + node.children[2].argument + " konnte nicht gefunden werden",{});
                 }
             }
             else if(typeForKeywordExists(node.children[1].argument) && node.children[2].argument == "uniform" && node.children.size() > 3){
@@ -1310,7 +1313,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     returnToScope.getVariable(node.children[3].argument)->getData()->isUniform() == false ||
                     returnToScope.getVariable(node.children[3].argument)->getData()->getTypeIndex() != getTypeIndexByKeyword(node.children[1].argument)){
 
-                    _ERROR << "Assertion failed : Uniform " << node.children[3].argument << " konnte nicht gefunden werden\n" << endln;
+                    RETURNING_ASSERT(TRIGGER_ASSERT, "Uniform " + node.children[3].argument + " konnte nicht gefunden werden", {});
                 }
             }
             else if( node.children[2].argument == "uniform"){
