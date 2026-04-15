@@ -22,6 +22,12 @@ struct KeywordRegister{
         keywordObjects.try_emplace(keyword, object);
     }
 
+    void removeRegisteredKeyword(const std::string& keyword){
+        
+        RETURNING_ASSERT(keywordObjects.contains(keyword), "Keyword ist nicht registriert",);
+        keywordObjects.erase(keyword);
+    }
+
     bool contains(const std::string& keyword){
         return keywordObjects.contains(keyword);
     }

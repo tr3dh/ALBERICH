@@ -106,6 +106,11 @@ void registerKeyword(const std::string& keyword, IObject* object){
     g_KeywordRegister.registerKeyword(keyword, object);
 }
 
+void removeRegisteredKeyword(const std::string& keyword){
+
+    g_KeywordRegister.removeRegisteredKeyword(keyword);
+}
+
 IObject* constructFromKeyword(const std::string& keyword){
 
     return g_KeywordRegister.constructFromKeyword(keyword);

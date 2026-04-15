@@ -936,5 +936,41 @@ bool emplaceStdOperations(){
     },
     {types::BOOL::typeIndex});
 
+    // Wegen Überladungslogik kann hier der erste Input nur als Arbitary entgegen genommen werden
+    registerFunction("registerConst", {IObject::ARBITATRY_TYPE, IObject::ARBITATRY_TYPE},
+        [__functionLabel__ = "registerConst", __numArgs__ = 2](FREG_ARGS){
+
+            // Asserts
+            ASSERT_IS_NO_MEMBER_FUNCTION;
+            ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+            PREPARE_RETURNS;
+
+            RETURNING_ASSERT(inputs[0]->getTypeIndex() == types::STRING::typeIndex, "Register Key muss String sein",);
+            GET_ARG(types::STRING, 0);
+
+            //
+            registerKeyword(arg0->getMember(), inputs[1]->getData()->clone().release());
+    },
+    {});
+
+    //
+    registerFunction("removeRegisteredConst", {IObject::ARBITATRY_TYPE},
+        [__functionLabel__ = "removeRegisteredConst", __numArgs__ = 1](FREG_ARGS){
+
+            // Asserts
+            ASSERT_IS_NO_MEMBER_FUNCTION;
+            ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+            PREPARE_RETURNS;
+
+            //
+            RETURNING_ASSERT(inputs[0]->getTypeIndex() == types::STRING::typeIndex, "Register Key muss String sein",);
+            GET_ARG(types::STRING, 0);
+
+            //
+            removeRegisteredKeyword(arg0->getMember());
+    },
+    {});
+
+    //
     return true;
 }

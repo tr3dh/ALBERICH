@@ -51,6 +51,8 @@ const std::string& getKeywordByTypeIndex(TypeIndex typeIndex);
 //
 bool valueForKeywordExists(const std::string& keyword);
 void registerKeyword(const std::string& keyword, IObject* object);
+void removeRegisteredKeyword(const std::string& keyword);
+
 IObject* constructFromKeyword(const std::string& keyword);
 
 // Wrapper für static and attribut keywords

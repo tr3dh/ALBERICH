@@ -317,13 +317,13 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
 
         if(string::contains(line, "//")){
             
-            if(line.find_first_of("//") == line.find_first_not_of(" \t")){
+            if(line.find("//") == line.find_first_not_of(" \t")){
                 
                 lineStr = "";
             }
             else{
                 
-                lineStr = line.substr(0, line.find_first_of("//"));
+                lineStr = line.substr(0, line.find("//"));
             }
         }
         else if(string::contains(line, "\\") && line.find_last_of("\\") == line.find_last_not_of(" \t")){
