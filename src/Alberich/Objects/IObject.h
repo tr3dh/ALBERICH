@@ -47,6 +47,8 @@ public:
     virtual bool isUniform(){ return false; }
     virtual bool isTrivial(){ return true; }
 
+    virtual bool isStructMember(){ return false; }
+
     virtual void clear(){};
 
     virtual void cloneMember(std::unique_ptr<IObject>& other){ RETURNING_ASSERT(TRIGGER_ASSERT, "clone Member nicht implementiert",); };

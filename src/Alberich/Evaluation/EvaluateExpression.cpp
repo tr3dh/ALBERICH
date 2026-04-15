@@ -1105,6 +1105,10 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                                 // Reference
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
                             }
+                            else if(paramVarN.getVariableRef().isReference()){
+
+                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                            }
                             else{
 
                                 // Copy
@@ -1170,6 +1174,10 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             else if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
 
                                 // Reference
+                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                            }
+                            else if(paramVarN.getVariableRef().isReference()){
+
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
                             }
                             else{
@@ -1238,6 +1246,10 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             else if(paramVarN.getVariableRef().isReference() && (inputN.isLValue() || inputN.getVariableRef().isReference())){
 
                                 // Reference
+                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                            }
+                            else if(paramVarN.getVariableRef().isReference()){
+
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
                             }
                             else{

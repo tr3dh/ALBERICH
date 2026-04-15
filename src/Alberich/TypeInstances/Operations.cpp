@@ -971,6 +971,36 @@ bool emplaceStdOperations(){
     },
     {});
 
+    // Wegen Überladungslogik kann hier der erste Input nur als Arbitary entgegen genommen werden
+    registerFunction("recast", {IObject::ARBITATRY_TYPE, IObject::ARBITATRY_TYPE},
+        [__functionLabel__ = "recast", __numArgs__ = 2](FREG_ARGS){
+
+            // Asserts
+            ASSERT_IS_NO_MEMBER_FUNCTION;
+            ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+
+            RETURNING_ASSERT(inputs[0]->getTypeIndex() == types::STRING::typeIndex, "Register Key muss String sein",);
+            GET_ARG(types::STRING, 0);
+
+            RETURNING_ASSERT(typeForKeywordExists(arg0->getMember()), "Ungültiger Type für recast übergeben",);
+            RETURNING_ASSERT(inputs[1]->isLValue() || inputs[1]->getVariableRef().isReference(), "Ungültiges Evalresult für Recast übergeben",);
+
+            std::unique_ptr<IObject>* recastVar = nullptr;
+
+            if(inputs[1]->getVariableRef().isReference()){
+
+                recastVar = inputs[1]->getVariableRef().referencedObject;
+            }
+            else{
+
+                recastVar = &inputs[1]->getVariableRef().ownedObject;
+            }
+
+            recastVar->reset(g_TypeRegister.constructRegisteredType(getTypeIndexByKeyword(arg0->getMember())));
+            returns.emplace_back().variablePtr = &inputs[1]->getVariableRef();
+    },
+    {IObject::ARBITATRY_TYPE});
+
     //
     return true;
 }
