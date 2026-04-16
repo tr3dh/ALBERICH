@@ -2,6 +2,8 @@
 
 #include "IObject.h"
 
+extern IObject* (*g_createVoid)();
+
 struct Variable{
 
     std::unique_ptr<IObject> ownedObject = nullptr;
@@ -50,6 +52,12 @@ struct Variable{
 
             // lhs = std::move(rhs);
             std::swap(lhs, rhs);
+        }
+
+        if(g_createVoid != nullptr){
+
+            other.inValidate();
+            other.constructByObject((*g_createVoid)());
         }
     }
 

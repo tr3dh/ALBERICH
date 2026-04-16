@@ -146,6 +146,7 @@ bool emplaceStdOperations(){
                 RETURNING_ASSERT(IsReferenceValid(source.getVariableRef().getUniqueData()), "Nicht initialisierte Source Referenz",);
             }
 
+            // derefVariable(returnToScope, inputs[1]->getVariableRef(), "...");
             recipient.getVariableRef().move(source.getVariableRef());
     },
     {});
@@ -214,6 +215,7 @@ bool emplaceStdOperations(){
                 RETURNING_ASSERT(IsReferenceValid(source.getVariableRef().getUniqueData()), "Nicht initialisierte Source Referenz",);
             }
 
+            // derefVariable(returnToScope, inputs[1]->getVariableRef(), "...");
             recipient.getVariableRef().move(source.getVariableRef());
     },
     {types::_VOID::typeIndex});
@@ -787,7 +789,18 @@ bool emplaceStdOperations(){
 
             RETURNING_ASSERT(inputs[0]->isLValue(), "...",);
 
-            RETURNING_ASSERT(returnToScope.eraseVariable(&inputs[0]->getVariableRef()), "...",);
+            if(returnToScope.eraseVariable(&inputs[0]->getVariableRef())){
+                return;
+            }
+
+            bool erased;
+            for(auto& [idx, scope] : g_staticScopes){
+
+                erased = scope.eraseVariable(&inputs[0]->getVariableRef()) && erased;
+                if(erased){ return; }
+            }
+
+            RETURNING_ASSERT(TRIGGER_ASSERT, "Variable konnte nicht gelöscht werden",);
     },
     {});
 

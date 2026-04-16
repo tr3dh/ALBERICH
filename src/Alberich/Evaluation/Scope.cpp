@@ -3,6 +3,30 @@
 //
 void (*g_processScopeBeforeDeletion)(Scope*) = nullptr;
 
+bool g_automaticDerefEnabled = true;
+
+void derefVariable(Scope& scope, Variable& var, const std::string& label){
+
+    if(!g_automaticDerefEnabled){ return; }
+
+    if(var.isReference()){ return; }
+
+    bool refExists = true;
+    Variable* refPtr;
+
+    while(refExists){
+
+        std::tie(refExists, refPtr) = scope.containsVariableReference(&var);
+
+        if(refExists){
+
+            refPtr->reference(&g_nullRefs[refPtr->getData()->getTypeIndex()]);
+
+            RETURNING_ASSERT(TRIGGER_ASSERT, "Bei Scope Löschung existiert externe Referenz lokaler Variable " + label + ", entsprechende Referenz wird dereferenziert",);
+        }
+    }
+}
+
 //
 Scope::~Scope(){
     
@@ -22,42 +46,14 @@ Scope::~Scope(){
 
     for(auto& [label, var] : variableTable){
         
-        if(var.isReference()){ continue; }
-
-        refExists = true;
-        while(refExists){
-
-            std::tie(refExists, refPtr) = parent->containsVariableReference(&var);
-    
-            if(refExists){
-
-                _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endln;
-                _ERROR << "entsprechende Referenz wird dereferenziert" << endln;
-
-                refPtr->forceReference(&g_nullRefs[refPtr->getData()->getTypeIndex()]);
-            }
-        }
+        derefVariable(*parent, var, label);
     }
 
     for(auto& [idx, scope] : g_staticScopes){
 
         for(auto& [label, var] : scope.variableTable){
         
-            if(var.isReference()){ continue; }
-
-            refExists = true;
-            while(refExists){
-
-                std::tie(refExists, refPtr) = parent->containsVariableReference(&var);
-        
-                if(refExists){
-
-                    refPtr->reference(&g_nullRefs[refPtr->getData()->getTypeIndex()]);
-
-                    _ERROR << "Bei Scope Löschung existiert externe Referenz lokaler Variable " << label << endln;
-                    _ERROR << "entsprechende Referenz wird dereferenziert" << endln;
-                }
-            }
+            derefVariable(scope, var, label);
         }
     }
 

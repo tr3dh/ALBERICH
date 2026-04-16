@@ -266,6 +266,22 @@ std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPa
     // --- ab hier sind alle ptrs auf die nullScope ungültig 
 }
 
+bool hasBalancedBrackets(const std::string& str) {
+
+    int par = 0, bra = 0, curl = 0;
+
+    for (char c : str) {
+
+        if      (c == '(') par++;
+        else if (c == ')') par--;
+        else if (c == '[') bra++;
+        else if (c == ']') bra--;
+        else if (c == '{') curl++;
+        else if (c == '}') curl--;
+    }
+    return par == 0 && bra == 0 && curl == 0;
+}
+
 void (*g_handleScriptBeforeExecution)(const std::string&) = nullptr;
 void (*g_handleScriptAfterExecution)(const std::string&) = nullptr;
 
@@ -357,11 +373,16 @@ ProcessingResult executeScript(const std::string& scriptPath, Scope* nullScope, 
     //
     file.close();
 
+    // Überprüfung dass Klammer setzung makroskopisch Ok ist
+    RETURNING_ASSERT(hasBalancedBrackets(src.scriptContent), "Inkonsistente Klammersetzung", {});
+
     //
     src.cacheLineBreaks();
 
     src.tokens = lexExpression(src.scriptContent);
     src.Expr.end = src.tokens.size();
+
+    if(src.tokens.empty()){ return {}; }
 
     convertTokensToAST(src.Expr, src.tokens, src.scriptContent);
 

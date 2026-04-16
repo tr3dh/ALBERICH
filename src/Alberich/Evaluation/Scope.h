@@ -8,6 +8,13 @@ typedef std::map<std::string, Variable> VariableTable;
 extern std::map<TypeIndex, Scope> g_staticScopes;
 extern void (*g_processScopeBeforeDeletion)(Scope*);
 
+struct Scope;
+
+extern bool g_automaticDerefEnabled;
+void derefVariable(Scope& scope, Variable& var, const std::string& label);
+
+void derefVariablePtr(Scope& scope, Variable& var, const std::string& label);
+
 struct Scope {
 
     //
