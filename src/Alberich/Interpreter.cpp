@@ -179,7 +179,15 @@ std::string getErrorContext(){
     return res;
 }
 
+IObject* createVoid(){
+
+    return g_TypeRegister.constructRegisteredType(types::_VOID::typeIndex);
+}
+
 std::vector<std::unique_ptr<IObject>> executeProgram(const std::string& scriptPath, Scope* parent){
+
+    //
+    g_createVoid = createVoid;
 
     //
     CheckAllOperatorsRegistered();

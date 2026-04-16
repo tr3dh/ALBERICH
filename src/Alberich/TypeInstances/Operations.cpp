@@ -779,44 +779,46 @@ bool emplaceStdOperations(){
     },
     {});
 
-    //
-    registerFunction("__delete__", {IObject::ARBITATRY_TYPE},
-        [__functionLabel__ = "__delete__", __numArgs__ = 1](FREG_ARGS){
+    // Erst reinnehmen wenn durchsortiert und funktionierend
 
-            // Asserts
-            ASSERT_IS_NO_MEMBER_FUNCTION;
-            ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+    // //
+    // registerFunction("__delete__", {IObject::ARBITATRY_TYPE},
+    //     [__functionLabel__ = "__delete__", __numArgs__ = 1](FREG_ARGS){
 
-            RETURNING_ASSERT(inputs[0]->isLValue(), "...",);
+    //         // Asserts
+    //         ASSERT_IS_NO_MEMBER_FUNCTION;
+    //         ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
 
-            if(returnToScope.eraseVariable(&inputs[0]->getVariableRef())){
-                return;
-            }
+    //         RETURNING_ASSERT(inputs[0]->isLValue(), "...",);
 
-            bool erased;
-            for(auto& [idx, scope] : g_staticScopes){
+    //         if(returnToScope.eraseVariable(&inputs[0]->getVariableRef())){
+    //             return;
+    //         }
 
-                erased = scope.eraseVariable(&inputs[0]->getVariableRef()) && erased;
-                if(erased){ return; }
-            }
+    //         bool erased;
+    //         for(auto& [idx, scope] : g_staticScopes){
 
-            RETURNING_ASSERT(TRIGGER_ASSERT, "Variable konnte nicht gelöscht werden",);
-    },
-    {});
+    //             erased = scope.eraseVariable(&inputs[0]->getVariableRef()) && erased;
+    //             if(erased){ return; }
+    //         }
 
-    //
-    registerFunction("__delete__", {types::STRING::typeIndex},
-        [__functionLabel__ = "__delete__", __numArgs__ = 1](FREG_ARGS){
+    //         RETURNING_ASSERT(TRIGGER_ASSERT, "Variable konnte nicht gelöscht werden",);
+    // },
+    // {});
 
-            // Asserts
-            ASSERT_IS_NO_MEMBER_FUNCTION;
-            ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+    // //
+    // registerFunction("__delete__", {types::STRING::typeIndex},
+    //     [__functionLabel__ = "__delete__", __numArgs__ = 1](FREG_ARGS){
 
-            GET_ARG(types::STRING, 0);
+    //         // Asserts
+    //         ASSERT_IS_NO_MEMBER_FUNCTION;
+    //         ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
 
-            RETURNING_ASSERT(returnToScope.eraseVariable(arg0->getMember()), "...",);
-    },
-    {});
+    //         GET_ARG(types::STRING, 0);
+
+    //         RETURNING_ASSERT(returnToScope.eraseVariable(arg0->getMember()), "...",);
+    // },
+    // {});
 
     //
     registerFunction("__invalidate__", {IObject::ARBITATRY_TYPE},
