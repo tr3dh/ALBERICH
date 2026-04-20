@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <filesystem>
 
-constexpr const std::string NULLSTR = "__INVALID__";
+inline static const std::string NULLSTR = "__INVALID__";
 
 namespace string{
 
