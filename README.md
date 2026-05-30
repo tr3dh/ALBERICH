@@ -4,7 +4,7 @@
 </p>
 
 # Assembling Library for Building Embedded Runtime and independent Interpreters Controlling native High Performance Resources (ALBERICH)
-<img align="left" style="width:360px" src="Recc/textures/Alberich_Logo_whiteBG.svg">
+<img align="left" style="width:360px" src="Recc/textures/Alberich_Logo_whiteBG.png">
 
 Alberich is an interpreter framework that enables the activation of native backends via a minimalist language distribution. With Alberich, you can create both embedded runtime interpreters that manipulate runtime objects in real time without the need for compilation, and standalone interpreters that independently manage instances of activated types. Hybrid interpreters can also be implemented. In addition, Alberich implements a fully configurable lexer and parser that can be set up with arbitrary sets of operators, hierarchies, and overloads. The Alberich interpreter framework was developed as part of a [master’s thesis](Recc/Thesis/Masterthesis_Rother_2026_public.pdf) for the Institute of Continuum Mechanics (IKM) at Leibniz University Hannover (LUH).
 

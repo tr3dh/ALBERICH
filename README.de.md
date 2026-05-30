@@ -4,7 +4,7 @@
 </p>
 
 # Assembling Library for Building Embedded Runtime and independent Interpreters Controlling native High Performance Resources (ALBERICH)
-<img align="left" style="width:360px" src="Recc/textures/Alberich_Logo_whiteBG.svg">
+<img align="left" style="width:360px" src="Recc/textures/Alberich_Logo_whiteBG.png">
 
 Alberich ist eine Interpreterschmiede, die die Freischaltung von nativen Backends über eine minimalistische Sprachdistribution ermöglicht. Mit Alberich können sowohl eingebettete Laufzeitinterpreter hergestellt werden, die in Echtzeit und ohne Übersetzungswaufwand Laufzeitobjekte manipulieren, als auch eigenständige Interpreter, die Instanzen freigeschalteter Typen eigenständig verwalten. Hybride Interpreter können ebenfalls impementiert werden. Zudem implementiert Alberich einen vollständig konfigurierbaren Lexer und Parser, der mit beliebigen Operatorensätzen, -hierarchien und -überladungen aufgesetzt werden kann. Die Interpreterschmiede Alberich wurde im Rahmen einer [Masterarbeit](Recc/Thesis/Masterthesis_Rother_2026_public.pdf) für das Institut für Kontinuumsmechanik (IKM) der Leibniz Universität Hannover (LUH) entwickelt.
 
