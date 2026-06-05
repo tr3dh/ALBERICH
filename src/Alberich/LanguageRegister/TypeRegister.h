@@ -80,15 +80,31 @@ struct TypeRegister{
 
     TypeIndex registerType(const std::string& keyword, const std::function<IObject*()>& initConstructor){
 
-        RETURNING_ASSERT(!typeIndices.contains(keyword), "Type Register hat Typ " + keyword + " bereits registriert", INVALID_TYPE_INDEX);
+        // RETURNING_ASSERT(!typeIndices.contains(keyword), "Type Register hat Typ " + keyword + " bereits registriert", INVALID_TYPE_INDEX);
 
-        auto [it, itSucces] = typeInfos.emplace(typeCounter, TypeInfo{keyword, initConstructor, typeCounter});
-        RETURNING_ASSERT(it != typeInfos.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
+        // auto [it, itSucces] = typeInfos.emplace(typeCounter, TypeInfo{keyword, initConstructor, typeCounter});
+        // RETURNING_ASSERT(it != typeInfos.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
 
-        auto [itIdx, itIdxSucces] = typeIndices.emplace(keyword, typeCounter);
-        RETURNING_ASSERT(itIdx != typeIndices.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
+        // auto [itIdx, itIdxSucces] = typeIndices.emplace(keyword, typeCounter);
+        // RETURNING_ASSERT(itIdx != typeIndices.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
 
-        return typeCounter++;
+        if(!typeIndices.contains(keyword)){
+            
+            auto [it, itSucces] = typeInfos.emplace(typeCounter, TypeInfo{keyword, initConstructor, typeCounter});
+            RETURNING_ASSERT(it != typeInfos.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
+
+            auto [itIdx, itIdxSucces] = typeIndices.emplace(keyword, typeCounter);
+            RETURNING_ASSERT(itIdx != typeIndices.end(), "Type " + keyword + " konnte nicht registriert werden", INVALID_TYPE_INDEX);
+
+            return typeCounter++;
+        }
+        else{
+
+            typeInfos.at(typeIndices.at(keyword)) = TypeInfo{keyword, initConstructor, typeCounter};
+            return typeIndices.at(keyword);
+        }
+
+        return -1;
     }
 
     bool contains(const std::string& keyword){
