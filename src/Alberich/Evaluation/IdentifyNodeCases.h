@@ -22,3 +22,4 @@ bool IsConstructionCall(const ASTNode& node);
 bool IsSingleConstructorCall(const ASTNode& node);
 bool IsMultiConstructorCall(const ASTNode& node);
 bool IsFunctionCall(const ASTNode& node);
+bool IsGetterCall(const ASTNode& node);

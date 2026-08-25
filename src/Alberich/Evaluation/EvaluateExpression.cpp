@@ -1391,6 +1391,20 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                 fetchBackend(static_cast<types::STRING*>(child.getData())->getMember());
             }
         }
+        // Getter Call
+        else if(IsGetterCall(node)){
+
+            //
+            ProcessingResult member = evaluateExpression(node.children[0], scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
+            RETURNING_ASSERT(member.evalResults.size() == 1, "MemberEvalRes fuer Getter Call hat ungleich 1 child",{});
+            EvalResult& memberRes = member.evalResults[0];
+
+            //
+            ProcessingResult getterArgs = evaluateExpression(node.children[1], scope, returnToScope, Context::ASSIGN_RIGHTSIDE);
+            
+            //
+            callMemberFunction("get", prcResult.evalResults, convertEvalResultsToPtrVec(getterArgs.evalResults), scope, &memberRes);
+        }
         else{
             
             _ERROR << "Invalid Chain Template" << endln;

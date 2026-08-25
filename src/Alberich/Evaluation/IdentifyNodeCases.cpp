@@ -167,3 +167,10 @@ bool IsFunctionCall(const ASTNode& node){
     return node.children.size() == 2 &&
         node.children[0].Relation == TkType::Argument && node.children[1].Relation == TkType::Params;
 }
+
+bool IsGetterCall(const ASTNode& node){
+
+    if(node.children.size() != 2){ return false; }
+
+    return node.children[1].Relation == TkType::Listing;
+}
