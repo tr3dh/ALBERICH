@@ -239,6 +239,33 @@ namespace types{
         },
         {});
 
+        registerMemberFunction(STRING::typeIndex, "readFromFile", {STRING::typeIndex},
+
+            [__functionLabel__ = "readFromFile", __numArgs__ = 1](FREG_ARGS){
+
+                // Asserts
+                ASSERT_IS_MEMBER_FUNCTION;
+                ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+                PREPARE_RETURNS;
+
+                //
+                GET_MEMBER(STRING);
+                GET_ARG(STRING, 0);
+
+                std::ifstream inputFile;
+
+                inputFile.open(arg0->getMember(), std::ios::in);
+
+                //
+                std::stringstream buffer;
+                buffer << inputFile.rdbuf();
+
+                //
+                mb->getMember() = buffer.str();
+                inputFile.close();
+            },
+            {});
+
         return true;
     }
 };

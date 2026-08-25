@@ -55,7 +55,7 @@ bool emplaceStdOperations(){
             bool sourceIsRValue = source.isRValue();
 
             //
-            RETURNING_ASSERT(!recipientIsRValue, "Variable der Wert zuwewiesen wird ist Rvalue",);
+            RETURNING_ASSERT(!recipientIsRValue || recipient.getVariableRef().isReference(), "Variable der Wert zuwewiesen wird ist Rvalue",);
 
             ASSERT(recipient.getTypeIndex() == types::_VOID::typeIndex || recipient.getTypeIndex() == source.getTypeIndex(), 
                 "narrowing conversion");

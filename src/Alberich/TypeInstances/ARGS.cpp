@@ -393,6 +393,26 @@ namespace types{
         },
         {ARGS::typeIndex});
 
+        //
+        registerFunction("__unpack__", {ARGS::typeIndex},
+            [__functionLabel__ = "__unpack__", __numArgs__ = 1](FREG_ARGS){
+
+                // Asserts
+                ASSERT_IS_NO_MEMBER_FUNCTION;
+                ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+
+                // Returns | Inputs
+                GET_ARG(ARGS, 0);
+
+                //
+                for(int i = 0; i < arg0->getMember().size(); i++){
+                    
+                    // gibt einen LValue zurück
+                    returns.emplace_back().setLValue(&(arg0->getMember().at(i).getVariableRef()));
+                }
+        },
+        {IObject::ARBITATRY_TYPE});
+
         return true;
     }
 }

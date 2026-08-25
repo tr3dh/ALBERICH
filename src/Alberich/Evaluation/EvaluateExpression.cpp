@@ -604,16 +604,33 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     
                     continue;
                 }
-                // Wenn Scope Variable (rvalue, Referenz) NICHT enthält und auch NICHT referenzierte Variable
-                else if(res.isRValue() && res.getVariableRef().isReference()){
 
-                    //
-                    res.variable.ownedObject = res.variable.referencedObject->get()->clone();
-                    res.variable.referencedObject = nullptr;
+                // // Sinvoller Fallback, funktioniert nur noch nicht bugfrei mit Referenzen auf args innerhalb von Objekten
+                // // Man sagt ja 'Weniger ist mehr'
+                // // ?? Evtl später ne globle Variable namens g_enableReturnGuard implementieren
 
-                    //
-                    continue;
-                }
+                // // Wenn Scope Variable (rvalue, Referenz) NICHT enthält und auch NICHT referenzierte Variable
+                // else if(res.isRValue() && res.getVariableRef().isReference()){
+
+                //     //
+                //     res.variable.ownedObject = res.variable.referencedObject->get()->clone();
+                //     res.variable.referencedObject = nullptr;
+
+                //     //
+                //     continue;
+                // }
+                
+
+                // // Fallback für LValues wenn nichts andere greift
+                // else if(res.isLValue()){
+                    
+                //     // result ist rvalue variable >> clone
+                //     res.constructRValueByContainedLValue();
+                // }
+
+                // // Restlichen Fallback muss User behandeln
+                // // ein Fallback mit LValues Eliminierung waere hier eine zu große Einschränkung
+
 
                 // result ist rvalue variable >> clone
                 res.constructRValueByContainedLValue();
