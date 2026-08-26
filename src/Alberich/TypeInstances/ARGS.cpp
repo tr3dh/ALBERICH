@@ -407,8 +407,18 @@ namespace types{
                 //
                 for(int i = 0; i < arg0->getMember().size(); i++){
                     
-                    // gibt einen LValue zurück
-                    returns.emplace_back().setLValue(&(arg0->getMember().at(i).getVariableRef()));
+                    if(arg0->getMember().at(i).isLValue()){
+
+                        returns.emplace_back().setLValue(&(arg0->getMember().at(i).getVariableRef()));
+                    }
+                    else if(arg0->getMember().at(i).getVariableRef().isReference()){
+
+                        returns.emplace_back().reference(arg0->getMember().at(i));
+                    }
+                    else{
+
+                        returns.emplace_back().cloneIntoRValue(arg0->getMember().at(i).getVariableRef());
+                    }
                 }
         },
         {IObject::ARBITATRY_TYPE});
