@@ -53,9 +53,9 @@ bool IsWhileLoop(const ASTNode& node){
         return false;
     }
 
-    RETURNING_ASSERT(node.children.size() == 3, "a", false);
+    // RETURNING_ASSERT(node.children.size() == 3, "...", false);
     RETURNING_ASSERT(node.children[0].Relation == TkType::Argument &&
-        node.children[1].Relation == TkType::Params && node.children[2].Relation == TkType::Section, "b", false);
+        node.children[1].Relation == TkType::Params && node.children[2].Relation == TkType::Section, "...", false);
 
     return true;
 }
@@ -69,11 +69,11 @@ bool IsForLoop(const ASTNode& node){
         return false;
     }
 
-    RETURNING_ASSERT(node.children.size() == 3, "a", false);
+    // RETURNING_ASSERT(node.children.size() == 3, "...", false);
     RETURNING_ASSERT(node.children[0].Relation == TkType::Argument &&
-        node.children[1].Relation == TkType::Params && node.children[2].Relation == TkType::Section, "b", false);
+        node.children[1].Relation == TkType::Params && node.children[2].Relation == TkType::Section, "...", false);
 
-    RETURNING_ASSERT(node.children[1].children.size() == 3, "c", false);
+    RETURNING_ASSERT(node.children[1].children.size() == 3, "Ungultige Anzahl an Argumenten in For-Header", false);
 
     return true;
 }

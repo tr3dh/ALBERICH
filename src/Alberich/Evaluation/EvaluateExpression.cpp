@@ -652,6 +652,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             ProcessingResult breakConditionRes, SectionRes;
             bool stayInLoop = true;
             bool firstFrame = true;
+            bool returnCurrentSectionRes = false;
 
             while(true){
 
@@ -681,7 +682,8 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     }
                     case(ExitCase::Return):{
 
-                        return SectionRes;
+                        stayInLoop = false;
+                        returnCurrentSectionRes = true;
                         break;
                     }
                     default:{
@@ -695,6 +697,21 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                 // inkrement aufrufen
                 evaluateExpression(increment, loopScope, returnToScope, context);
+            }
+
+            // Mit angehängter defer Section
+            if(node.children.size() == 5 && node.children[3].Relation == TkType::Argument && node.children[4].Relation == TkType::Section){
+
+                const ASTNode& keyword = node.children[3];
+                const ASTNode& kwSection = node.children[4];
+
+                RETURNING_ASSERT(keyword.argument == "defer", "Invalides Keyword fuer an Schleife angehaengte Section", {});
+                evaluateExpression(kwSection, loopScope, returnToScope, !firstFrame ? context : Context::FIRST_LOOP_FRAME);
+            }
+
+            if(returnCurrentSectionRes){
+
+                return SectionRes;
             }
         }
         else if(IsWhileLoop(node)){
@@ -715,6 +732,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
             ProcessingResult breakConditionRes, SectionRes;
             bool stayInLoop = true;
             bool firstFrame = true;
+            bool returnCurrentSectionRes = false;
 
             // initialize
             evaluateExpression(paramSection, loopScope, returnToScope, context);
@@ -749,7 +767,8 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                     }
                     case(ExitCase::Return):{
 
-                        return SectionRes;
+                        stayInLoop = false;
+                        returnCurrentSectionRes = true;
                         break;
                     }
                     default:{
@@ -760,6 +779,21 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                 // abbrechen wenn erforderlich
                 if(!stayInLoop){ break; }
+            }
+
+            // Mit angehängter defer Section
+            if(node.children.size() == 5 && node.children[3].Relation == TkType::Argument && node.children[4].Relation == TkType::Section){
+
+                const ASTNode& keyword = node.children[3];
+                const ASTNode& kwSection = node.children[4];
+
+                RETURNING_ASSERT(keyword.argument == "defer", "Invalides Keyword fuer an Schleife angehaengte Section", {});
+                evaluateExpression(kwSection, loopScope, returnToScope, !firstFrame ? context : Context::FIRST_LOOP_FRAME);
+            }
+
+            if(returnCurrentSectionRes){
+                
+                return SectionRes;
             }
         }
         else if(IsIfStatement(node)){
