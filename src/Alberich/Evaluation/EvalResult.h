@@ -51,18 +51,21 @@ struct EvalResult {
     void moveIntoRValue(Variable& varIn){
 
         variable.move(varIn);
+        variablePtr = nullptr;
     }
 
     //
     void cloneIntoRValue(Variable& varIn){
 
         variable.clone(varIn);
+        variablePtr = nullptr;
     }
 
     //
     void constructRValueByObject(IObject* object){
 
         variable.constructByObject(object);
+        variablePtr = nullptr;
     }
 
     // //

@@ -423,6 +423,40 @@ namespace types{
         },
         {IObject::ARBITATRY_TYPE});
 
+        //
+        registerFunction("__eliminateRefs__", {ARGS::typeIndex},
+            [__functionLabel__ = "__eliminateRefs__", __numArgs__ = 1](FREG_ARGS){
+
+                // Asserts
+                ASSERT_IS_NO_MEMBER_FUNCTION;
+                ASSERT_HAS_N_INPUT_ARGS(__numArgs__);
+
+                // Returns | Inputs
+                GET_ARG(ARGS, 0);
+
+                //
+                for(int i = 0; i < arg0->getMember().size(); i++){
+                    
+                    if(arg0->getMember().at(i).isLValue()){
+
+                        arg0->getMember().at(i).constructRValueByContainedLValue();
+                    }
+                    else if(arg0->getMember().at(i).getVariableRef().isReference()){
+
+                        std::unique_ptr<IObject> clonedPtr = (*arg0->getMember().at(i).getVariableRef().getUniqueData())->clone();
+                        arg0->getMember().at(i).constructRValueByObject(clonedPtr.release());
+                    }
+                    else{
+
+                        // Eintrag muss RValue sein und kann damit belassen werden
+                        // (keine pointer auf durch Return invalidierte Objekte, etc.)
+                    }
+                }
+
+                returns.emplace_back().setLValue(&inputs[0]->getVariableRef());
+        },
+        {IObject::ARBITATRY_TYPE});
+
         return true;
     }
 }
