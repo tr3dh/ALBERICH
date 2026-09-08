@@ -799,22 +799,71 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
         else if(IsForeachLoop(node)){
 
             const ASTNode& paramSection = node.children[1];
-            const ASTNode& increment = paramSection.children[0];
+            const ASTNode& header = paramSection;
+
+            RETURNING_ASSERT(header.children.size() == 1, "...", {});
+            RETURNING_ASSERT(header.children[0].Relation == TkType::Operator && g_lengthSortedLexerOperators[header.children[0].Operator] == "|",
+                "Invalider Operator in foreach Header", {});
+                
+            const ASTNode& loopRefs = header.children[0].children[0];
+            const ASTNode& loopArgs = header.children[0].children[1];
 
             const ASTNode& executableSection = node.children[2];
 
             Scope loopScope;
             loopScope.parent = &scope;
 
-            ProcessingResult incrementRes, SectionRes;
+            ProcessingResult loopRefsRes, loopArgsRes, tmpRes, SectionRes;
             bool stayInLoop = true;
             bool firstFrame = true;
             bool returnCurrentSectionRes = false;
 
-            // inkrement aufrufen
-            evaluateExpression(increment, loopScope, returnToScope, context);
+            loopRefsRes = evaluateExpression(loopRefs, loopScope, returnToScope, context);
+            loopArgsRes = evaluateExpression(loopArgs, loopScope, returnToScope, context);
 
-            while(true){
+            // // Annahme : alle args sind gleich lang
+            // RETURNING_ASSERT(loopArgsRes.evalResults[0].getTypeIndex() == types::ARGS::typeIndex, "...", {});
+            
+            // // reines Args Processing
+            // size_t loopFrames = static_cast<types::ARGS*>(loopArgsRes.evalResults[0].getData()) -> getMember().size();
+
+            // Processing über Getter (und ´size´ call) (vom Nutzer besser einstellbar, aber etwas langsamer)
+            tmpRes.clear();
+
+            callMemberFunction("size", tmpRes.evalResults, {}, scope, &loopArgsRes.evalResults[0]);
+            size_t loopFrames = static_cast<types::INT*>(tmpRes.evalResults[0].getVariableRef().getData()) -> getMember();
+            size_t frameCounter = -1;
+
+            //
+            EvalResult loopIndexEvlRes;
+            
+            for(frameCounter = 0; frameCounter < loopFrames; frameCounter++){
+
+                for(size_t refIdx = 0; refIdx < loopRefsRes.evalResults.size(); refIdx++){
+
+                    EvalResult& loopRef = loopRefsRes.evalResults[refIdx];
+                    EvalResult& loopArg = loopArgsRes.evalResults[refIdx];
+                    
+                    // // reines Args Processing
+                    // types::ARGS* currentArgEntry = static_cast<types::ARGS*>(loopArg.getVariableRef().getData());
+                    // loopRef.getVariableRef().reference(currentArgEntry->getMember()[frameCounter].getVariableRef());
+
+                    // Processing über Getter (vom Nutzer besser einstellbar, aber etwas langsamer)
+                    tmpRes.clear();
+                    loopIndexEvlRes = EvalResult(new types::INT((int)frameCounter));
+
+                    callMemberFunction("get", tmpRes.evalResults, {&loopIndexEvlRes}, scope, &loopArg);
+
+                    if(loopArg.getTypeIndex() == types::ARGS::typeIndex
+                        || tmpRes.evalResults[0].isLValue() || tmpRes.evalResults[0].getVariableRef().isReference()){
+                        
+                        loopRef.getVariableRef().reference(tmpRes.evalResults[0].getVariableRef());
+                    }
+                    else{
+                        
+                        loopRef.getVariableRef().clone(tmpRes.evalResults[0].getVariableRef());
+                    }
+                }
 
                 // Schleifen Sektion ausführen
                 SectionRes = evaluateExpression(executableSection, loopScope, returnToScope, !firstFrame ? context : Context::FIRST_LOOP_FRAME);
@@ -842,9 +891,6 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
 
                 // abbrechen wenn erforderlich
                 if(!stayInLoop){ break; }
-
-                // inkrement aufrufen
-                evaluateExpression(increment, loopScope, returnToScope, context);
             }
 
             // Mit angehängter defer Section
