@@ -1224,7 +1224,45 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             }
                             else if(paramVarN.getVariableRef().isReference()){
 
-                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                // !! Achtung !!
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // Diesen Abschnitt mit Vosicht genießen
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // An manchen Stellen sind Inplace Recasts von RValues nötig
+                                // z.B. 
+                                //      `2 * args(...)` [bld]
+                                //
+                                // wird über eine custom `__mulAssign__` vom User angestellt,
+                                // die den RValue `2` zu args recastet und diese Args mit einer temporären Kopie
+                                // des ursprünglichen RValues `2` vervielfältigt
+                                //
+                                // Damit die Funktion den RValue tatsächlich vor Ort modifizieren kann
+                                // wurde hier die Zeile
+                                //
+                                //      `paramVarN.getVariableRef().reference(inputN.getVariableRef());` [cpp]
+                                //
+                                // genutzt. Diese sorgt dafür dass ein Zeiger auf den ursrpünglichen RValue
+                                // weiter gehandhabt wird, die Funktion den Recast anstellen kann,
+                                // den ursrünglichen RValue vor Ort modifiziert, zu einer
+                                // `args`-Variable recastet und dort dann den vervielfältigten ursprünglichen
+                                // `args` hinschreibt
+                                //
+                                // Meiner Meinung nach dürfte das ganze ohne diese
+                                // RValue-Referenzierung nicht funktionieren
+                                // Es funktioniert jedoch !!
+                                //
+                                // Deshalb wird hier provisorisch, von der RValue-Referenzierung auf die Kopie
+                                // umgestellt, da innerhalb der Funktion sonst nicht unterscheidbar
+                                // ist, was genau übergeben worden ist und wie es gehandhabt werden
+                                // soll
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                // // RValue-Referenzierung, wenn notwendig wieder einkommentieren
+                                // paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                
+                                // RValue-Kopie, wenn notwendig wieder auskommentieren
+                                paramVarN.getVariableRef().inValidate();
+                                paramVarN.getVariableRef().clone(inputN.getVariableRef());
                             }
                             else{
 
@@ -1295,7 +1333,45 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             }
                             else if(paramVarN.getVariableRef().isReference()){
 
-                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                // !! Achtung !!
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // Diesen Abschnitt mit Vosicht genießen
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // An manchen Stellen sind Inplace Recasts von RValues nötig
+                                // z.B. 
+                                //      `2 * args(...)` [bld]
+                                //
+                                // wird über eine custom `__mulAssign__` vom User angestellt,
+                                // die den RValue `2` zu args recastet und diese Args mit einer temporären Kopie
+                                // des ursprünglichen RValues `2` vervielfältigt
+                                //
+                                // Damit die Funktion den RValue tatsächlich vor Ort modifizieren kann
+                                // wurde hier die Zeile
+                                //
+                                //      `paramVarN.getVariableRef().reference(inputN.getVariableRef());` [cpp]
+                                //
+                                // genutzt. Diese sorgt dafür dass ein Zeiger auf den ursrpünglichen RValue
+                                // weiter gehandhabt wird, die Funktion den Recast anstellen kann,
+                                // den ursrünglichen RValue vor Ort modifiziert, zu einer
+                                // `args`-Variable recastet und dort dann den vervielfältigten ursprünglichen
+                                // `args` hinschreibt
+                                //
+                                // Meiner Meinung nach dürfte das ganze ohne diese
+                                // RValue-Referenzierung nicht funktionieren
+                                // Es funktioniert jedoch !!
+                                //
+                                // Deshalb wird hier provisorisch, von der RValue-Referenzierung auf die Kopie
+                                // umgestellt, da innerhalb der Funktion sonst nicht unterscheidbar
+                                // ist, was genau übergeben worden ist und wie es gehandhabt werden
+                                // soll
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                // // RValue-Referenzierung, wenn notwendig wieder einkommentieren
+                                // paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                
+                                // RValue-Kopie, wenn notwendig wieder auskommentieren
+                                paramVarN.getVariableRef().inValidate();
+                                paramVarN.getVariableRef().clone(inputN.getVariableRef());
                             }
                             else{
 
@@ -1367,7 +1443,45 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                             }
                             else if(paramVarN.getVariableRef().isReference()){
                             
-                                paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                // !! Achtung !!
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // Diesen Abschnitt mit Vosicht genießen
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                // An manchen Stellen sind Inplace Recasts von RValues nötig
+                                // z.B. 
+                                //      `2 * args(...)` [bld]
+                                //
+                                // wird über eine custom `__mulAssign__` vom User angestellt,
+                                // die den RValue `2` zu args recastet und diese Args mit einer temporären Kopie
+                                // des ursprünglichen RValues `2` vervielfältigt
+                                //
+                                // Damit die Funktion den RValue tatsächlich vor Ort modifizieren kann
+                                // wurde hier die Zeile
+                                //
+                                //      `paramVarN.getVariableRef().reference(inputN.getVariableRef());` [cpp]
+                                //
+                                // genutzt. Diese sorgt dafür dass ein Zeiger auf den ursrpünglichen RValue
+                                // weiter gehandhabt wird, die Funktion den Recast anstellen kann,
+                                // den ursrünglichen RValue vor Ort modifiziert, zu einer
+                                // `args`-Variable recastet und dort dann den vervielfältigten ursprünglichen
+                                // `args` hinschreibt
+                                //
+                                // Meiner Meinung nach dürfte das ganze ohne diese
+                                // RValue-Referenzierung nicht funktionieren
+                                // Es funktioniert jedoch !!
+                                //
+                                // Deshalb wird hier provisorisch, von der RValue-Referenzierung auf die Kopie
+                                // umgestellt, da innerhalb der Funktion sonst nicht unterscheidbar
+                                // ist, was genau übergeben worden ist und wie es gehandhabt werden
+                                // soll
+                                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                // // RValue-Referenzierung, wenn notwendig wieder einkommentieren
+                                // paramVarN.getVariableRef().reference(inputN.getVariableRef());
+                                
+                                // RValue-Kopie, wenn notwendig wieder auskommentieren
+                                paramVarN.getVariableRef().inValidate();
+                                paramVarN.getVariableRef().clone(inputN.getVariableRef());
                             }
                             else{
 
