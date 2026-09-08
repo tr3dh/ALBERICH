@@ -796,6 +796,72 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                 return SectionRes;
             }
         }
+        else if(IsForeachLoop(node)){
+
+            const ASTNode& paramSection = node.children[1];
+            const ASTNode& increment = paramSection.children[0];
+
+            const ASTNode& executableSection = node.children[2];
+
+            Scope loopScope;
+            loopScope.parent = &scope;
+
+            ProcessingResult incrementRes, SectionRes;
+            bool stayInLoop = true;
+            bool firstFrame = true;
+            bool returnCurrentSectionRes = false;
+
+            // inkrement aufrufen
+            evaluateExpression(increment, loopScope, returnToScope, context);
+
+            while(true){
+
+                // Schleifen Sektion ausführen
+                SectionRes = evaluateExpression(executableSection, loopScope, returnToScope, !firstFrame ? context : Context::FIRST_LOOP_FRAME);
+                if(firstFrame){ firstFrame = false; }
+
+                //
+                switch(SectionRes.exit){
+                    
+                    case(ExitCase::Break):{
+                        
+                        stayInLoop = false;
+                        break;
+                    }
+                    case(ExitCase::Return):{
+
+                        stayInLoop = false;
+                        returnCurrentSectionRes = true;
+                        break;
+                    }
+                    default:{
+
+                        break;
+                    }
+                }
+
+                // abbrechen wenn erforderlich
+                if(!stayInLoop){ break; }
+
+                // inkrement aufrufen
+                evaluateExpression(increment, loopScope, returnToScope, context);
+            }
+
+            // Mit angehängter defer Section
+            if(node.children.size() == 5 && node.children[3].Relation == TkType::Argument && node.children[4].Relation == TkType::Section){
+
+                const ASTNode& keyword = node.children[3];
+                const ASTNode& kwSection = node.children[4];
+
+                RETURNING_ASSERT(keyword.argument == "defer", "Invalides Keyword fuer an Schleife angehaengte Section", {});
+                evaluateExpression(kwSection, loopScope, returnToScope, !firstFrame ? context : Context::FIRST_LOOP_FRAME);
+            }
+
+            if(returnCurrentSectionRes){
+
+                return SectionRes;
+            }
+        }
         else if(IsIfStatement(node)){
 
             //
@@ -1300,7 +1366,7 @@ ProcessingResult evaluateExpression(const ASTNode& node, Scope& scope, Scope& re
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
                             }
                             else if(paramVarN.getVariableRef().isReference()){
-
+                            
                                 paramVarN.getVariableRef().reference(inputN.getVariableRef());
                             }
                             else{

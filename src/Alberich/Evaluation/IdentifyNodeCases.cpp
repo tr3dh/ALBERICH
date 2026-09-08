@@ -78,6 +78,24 @@ bool IsForLoop(const ASTNode& node){
     return true;
 }
 
+//
+bool IsForeachLoop(const ASTNode& node){
+
+    if(node.children.size() < 3){ return false; }
+
+    if(node.children[0].argument != "foreach"){
+        return false;
+    }
+
+    // RETURNING_ASSERT(node.children.size() == 3, "...", false);
+    RETURNING_ASSERT(node.children[0].Relation == TkType::Argument &&
+        node.children[1].Relation == TkType::Params && node.children[2].Relation == TkType::Section, "...", false);
+
+    RETURNING_ASSERT(node.children[1].children.size() == 1, "Ungultige Anzahl an Argumenten in Foreach-Header", false);
+
+    return true;
+}
+
 bool IsStaticSection(const ASTNode& node){
     
     if(node.children.size() < 2){ return false; }

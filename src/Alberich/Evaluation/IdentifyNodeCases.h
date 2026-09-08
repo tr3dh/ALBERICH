@@ -15,6 +15,7 @@ bool IsElseSection(const ASTNode& node);
 //
 bool IsWhileLoop(const ASTNode& node);
 bool IsForLoop(const ASTNode& node);
+bool IsForeachLoop(const ASTNode& node);
 bool IsStaticSection(const ASTNode& node);
 
 //
