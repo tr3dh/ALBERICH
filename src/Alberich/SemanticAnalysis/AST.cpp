@@ -79,8 +79,8 @@ void convertTokensToAST(ASTNode& Expr, const std::vector<Token>& tokens, const s
             Expr.argument = expressionStr.substr(token.position, token.length);
         }
         else if(Expr.Relation == TkType::String){
-            
-            Expr.argument = expressionStr.substr(token.position, token.length);
+
+            Expr.argument = unescapeString(expressionStr.substr(token.position, token.length));
         }
         else if(Expr.Relation == TkType::Constant || token.type == TkType::Constant){
 

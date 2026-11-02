@@ -107,6 +107,33 @@ void getOperatorIdx(const std::string& expression){
     }
 }
 
+std::string unescapeString(const std::string& raw){
+
+    std::string out;
+    out.reserve(raw.size());
+
+    for(size_t i = 0; i < raw.size(); i++){
+
+        if(raw[i] == '\\' && i + 1 < raw.size()){
+
+            // Backslash verwerfen, Folgezeichen auswerten
+            i++;    
+
+            switch(raw[i]){
+
+                case 'n': out += '\n'; break;
+                case 't': out += '\t'; break;
+                default:  out += raw[i]; break;
+            }
+            continue;
+        }
+
+        out += raw[i];
+    }
+
+    return out;
+}
+
 std::vector<Token> lexExpression(const std::string& expression){
 
     //
@@ -146,15 +173,17 @@ std::vector<Token> lexExpression(const std::string& expression){
             argLen = 1;
             while(exprIdx + argLen < expression.size() && expression[exprIdx + argLen] != '"'){
 
+                // Escape-Sequenz: Backslash + nächstes Zeichen überspringen
+                if(expression[exprIdx + argLen] == '\\' && exprIdx + argLen + 1 < expression.size()){
+                    argLen++;
+                }
                 argLen++;
             }
 
-            if(argLen > 1){
+            //
+            tokens.emplace_back(exprIdx + 1, argLen - 1, hierarchie, TkType::String, g_numLexerOperators);
+            exprIdx += argLen;
 
-                //
-                tokens.emplace_back(exprIdx + 1, argLen - 1, hierarchie, TkType::String, g_numLexerOperators);
-                exprIdx += argLen;
-            }
         }
         else if(std::isalpha(exprChar) || exprChar == '_'){
 

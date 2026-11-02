@@ -61,3 +61,5 @@ std::ostream& operator<<(std::ostream& os, const Token& obj);
 
 void getOperatorIdx(const std::string& expression);
 std::vector<Token> lexExpression(const std::string& expression);
+
+std::string unescapeString(const std::string& raw);
